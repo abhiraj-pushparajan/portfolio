@@ -1,0 +1,649 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="api-suite.xml" >
+		<munit:parameterizations >
+			<munit:parameterization name="Default" >
+				<munit:parameters >
+					<munit:parameter propertyName="s3.reconnection.attempts" value="0" />
+					<munit:parameter propertyName="redshift-api.reconnection.attempts" value="0" />
+					<munit:parameter propertyName="salesforce-api.reconnection.attempts" value="0" />
+				</munit:parameters>
+			</munit:parameterization>
+		</munit:parameterizations>
+	</munit:config>
+	<munit:test name="call-redshift-sys-api-flow-test" doc:id="9cabf295-4194-4ee2-a24e-4070f646ebdc">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock HTTP Request to fetch data from redshift lu_sf_deployments" doc:id="e9ceffe3-b1a6-4d34-9dbb-7dacb1bca2d8" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="63dd430f-c01e-4527-a04a-25014abcb1b9" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://callredshiftsysapiflowtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="sfTarget" value="#[output application/java --- readUrl('classpath://callredshiftsysapiflowtest\mock_variable_.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="luSfDeployments" value="#[output application/json --- readUrl('classpath://callredshiftsysapiflowtest\mock_variable_1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="usageReportMapping" value="#[output application/json --- readUrl('classpath://callredshiftsysapiflowtest\mock_variable_2.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to fetch data from redshift usage_report_mapping" doc:id="3ef9681e-301e-48d6-acc7-7d67859cd903" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="30b4c0ab-458a-43c6-b2df-10522fac4f0a" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://callredshiftsysapiflowtest\mock_payload1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="sfTarget" value="#[output application/java --- readUrl('classpath://callredshiftsysapiflowtest\mock_variable_3.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="usageReportMapping" value="#[output application/json --- readUrl('classpath://callredshiftsysapiflowtest\mock_variable_4.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="fc68a17f-99b3-4fdc-b297-1ade2b5986f0" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://callredshiftsysapiflowtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:variables >
+					<munit:variable key="sfTarget" value="#[output application/java --- readUrl('classpath://callredshiftsysapiflowtest\set-event_variable_.dwl')]" encoding="UTF-8" mediaType="application/java" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to call-redshift-sys-api-flow" doc:id="c7de0fdc-5fcb-4fab-8b92-e2d3438e8417" name="call-redshift-sys-api-flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="93700b43-5768-4db9-8bad-e3ec8be855b8" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import callredshiftsysapiflowtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="call-redshift-sys-api-flow-negative-test" doc:id="2c53cb04-5402-45ec-b65c-bb0c8074972d">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to fetch data from redshift usage_report_mapping" doc:id="9ea3728f-1cac-4d73-9452-531091961220" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="GET" attributeName="method" />
+					<munit-tools:with-attribute whereValue="HTTP Request to fetch data from redshift usage_report_mapping" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="30b4c0ab-458a-43c6-b2df-10522fac4f0a" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="Redshift_HTTP_Request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${redshift-api.path}" attributeName="path" />
+					<munit-tools:with-attribute whereValue="usageReportMapping" attributeName="target" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:error typeId="HTTP:UNAUTHORIZED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to fetch data from redshift lu_sf_deployments" doc:id="c463c3ec-4f9f-4bb7-aa21-f50ec5d1c0cd" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="GET" attributeName="method" />
+					<munit-tools:with-attribute whereValue="HTTP Request to fetch data from redshift lu_sf_deployments" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="63dd430f-c01e-4527-a04a-25014abcb1b9" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:error typeId="HTTP:UNAUTHORIZED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to update salesforce interface-logs for account" doc:id="364b94b2-a531-43b5-a065-e59a42154b57" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="32798e32-3229-44ce-b0a4-d6184301a653" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_payload3.dwl')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to update salesforce interface-logs for deployment" doc:id="5c5598a8-544f-4501-87d4-05f47ee2c26c" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="1d92e3ef-ac1a-4272-be4d-38b4b466e94c" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_payload3.dwl')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<try doc:name="Try" doc:id="6f721850-b0b5-4ce1-86b1-d8d8cbfbb809">
+				<flow-ref doc:name="Flow Reference to call-redshift-sys-api-flow" doc:id="eaab26ab-b285-496e-b1ce-b998467fe48d" name="call-redshift-sys-api-flow" />
+				<error-handler>
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="b5c9f7e8-fc4b-49c7-ac5e-8d99ee475ee7" />
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert doc:name="Assert expression" doc:id="801c85ca-fc99-4e31-92bf-3866ea236dc5" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="call-redshift-sys-api-flow-negative-test-HTTP:CONNECTIVITY" doc:id="024577d3-918b-4dc7-b9d8-fefd42492e98">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to fetch data from redshift usage_report_mapping" doc:id="99225575-611f-42e5-9542-eebd6c5892fb" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="GET" attributeName="method" />
+					<munit-tools:with-attribute whereValue="HTTP Request to fetch data from redshift usage_report_mapping" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="30b4c0ab-458a-43c6-b2df-10522fac4f0a" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="Redshift_HTTP_Request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${redshift-api.path}" attributeName="path" />
+					<munit-tools:with-attribute whereValue="usageReportMapping" attributeName="target" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to fetch data from redshift lu_sf_deployments" doc:id="e832ffff-5b8d-4010-8ede-b71dabbfbdee" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="GET" attributeName="method" />
+					<munit-tools:with-attribute whereValue="HTTP Request to fetch data from redshift lu_sf_deployments" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="63dd430f-c01e-4527-a04a-25014abcb1b9" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:error typeId="HTTP:UNAUTHORIZED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to update salesforce interface-logs for account" doc:id="673034f7-4354-4a98-a5d6-7f78f3bc5d71" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="32798e32-3229-44ce-b0a4-d6184301a653" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_payload3.dwl')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to update salesforce interface-logs for deployment" doc:id="ae22d24d-740f-4785-8f0d-36d64e925614" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="1d92e3ef-ac1a-4272-be4d-38b4b466e94c" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_payload3.dwl')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<try doc:name="Try" doc:id="6e44a43a-12f7-47e0-92da-a0f8997868f6">
+				<flow-ref doc:name="Flow Reference to call-redshift-sys-api-flow" doc:id="56f7a0b7-4d8a-4477-a64c-b96e5e0a7292" name="call-redshift-sys-api-flow" />
+				<error-handler>
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="e84e169f-ba93-4b25-b010-d2b7f0112a41" />
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert doc:name="Assert expression" doc:id="f1b7d5f0-cb3f-4374-9bc1-8b116f1a70b3" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="call-redshift-sys-api-flow-lu_sf-negative-test" doc:id="5150dede-70ad-4ec8-904b-e3f10d348261">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to fetch data from redshift lu_sf_deployments" doc:id="23d5ec24-c0b7-45f9-ade8-288f9933f06d" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="63dd430f-c01e-4527-a04a-25014abcb1b9" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:UNAUTHORIZED" />
+					<munit-tools:variables >
+						<munit-tools:variable key="sfTarget" value="#[output application/java --- readUrl('classpath://callredshiftsysapiflowtest\mock_variable_.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="luSfDeployments" value="#[output application/json --- readUrl('classpath://callredshiftsysapiflowtest\mock_variable_1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="usageReportMapping" value="#[output application/json --- readUrl('classpath://callredshiftsysapiflowtest\mock_variable_2.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to fetch data from redshift usage_report_mapping" doc:id="9b6de9f0-962d-46a2-8c16-7cab5031c301" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="30b4c0ab-458a-43c6-b2df-10522fac4f0a" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://callredshiftsysapiflowtest\mock_payload1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:variables>
+						<munit-tools:variable key="sfTarget" value="#[output application/java --- readUrl('classpath://callredshiftsysapiflowtest\mock_variable_3.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="usageReportMapping" value="#[output application/json --- readUrl('classpath://callredshiftsysapiflowtest\mock_variable_4.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to update salesforce interface-logs for account" doc:id="17e1f33f-91e5-4da5-87f7-94762fcb96fc" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="3e52f903-a89f-4126-83a4-80547601b3b1" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_payload3.dwl')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to update salesforce interface-logs for deployment" doc:id="f021226a-d61a-4ed7-b8bb-3fbe70f3cc5e" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="8abaa4f8-997a-4a33-b555-c2ff6967ebef" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_payload3.dwl')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="5381a333-dde6-4be9-b336-6f8b0ddead1f">
+				<munit:payload value="#[output application/json --- readUrl('classpath://callredshiftsysapiflowtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:variables>
+					<munit:variable key="sfTarget" value="#[output application/java --- readUrl('classpath://callredshiftsysapiflowtest\set-event_variable_.dwl')]" encoding="UTF-8" mediaType="application/java" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution>
+			<try doc:name="Try" doc:id="951bba19-5e57-4c77-b10b-216ae346bb5f">
+				<flow-ref doc:name="Flow-ref to call-redshift-sys-api-flow" doc:id="5cf2a96b-067d-46b6-8344-93bac37cabd0" name="call-redshift-sys-api-flow" />
+				<error-handler>
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="761638fe-e840-4473-879e-244884e27849" />
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert doc:name="Assert expression" doc:id="51b0e3c2-a468-4811-831e-5f9fcdba14ab" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="call-redshift-sys-api-flow-lu_sf-negative-test-HTTP:CONNECTIVITY" doc:id="87a7089f-acfc-49c5-bc5f-767b05fe77f6">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to fetch data from redshift lu_sf_deployments" doc:id="1375ab9f-69bd-433b-9b2c-bcf339b93ebc" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="63dd430f-c01e-4527-a04a-25014abcb1b9" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:CONNECTIVITY" />
+					<munit-tools:variables >
+						<munit-tools:variable key="sfTarget" value="#[output application/java --- readUrl('classpath://callredshiftsysapiflowtest\mock_variable_.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="luSfDeployments" value="#[output application/json --- readUrl('classpath://callredshiftsysapiflowtest\mock_variable_1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="usageReportMapping" value="#[output application/json --- readUrl('classpath://callredshiftsysapiflowtest\mock_variable_2.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to fetch data from redshift usage_report_mapping" doc:id="c8cf2ee4-c8de-4343-b73c-6e9802ce4fe1" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="30b4c0ab-458a-43c6-b2df-10522fac4f0a" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://callredshiftsysapiflowtest\mock_payload1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:variables>
+						<munit-tools:variable key="sfTarget" value="#[output application/java --- readUrl('classpath://callredshiftsysapiflowtest\mock_variable_3.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="usageReportMapping" value="#[output application/json --- readUrl('classpath://callredshiftsysapiflowtest\mock_variable_4.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to update salesforce interface-logs for account" doc:id="44258252-472c-4376-8128-d1af28dce65d" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="3e52f903-a89f-4126-83a4-80547601b3b1" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_payload3.dwl')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to update salesforce interface-logs for deployment" doc:id="edf54356-b1db-4978-b0d5-d9a2b8c2d70f" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="8abaa4f8-997a-4a33-b555-c2ff6967ebef" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_payload3.dwl')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="33ae52b8-bcce-4a4b-b781-0e73392715f8">
+				<munit:payload value="#[output application/json --- readUrl('classpath://callredshiftsysapiflowtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:variables>
+					<munit:variable key="sfTarget" value="#[output application/java --- readUrl('classpath://callredshiftsysapiflowtest\set-event_variable_.dwl')]" encoding="UTF-8" mediaType="application/java" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution>
+			<try doc:name="Try" doc:id="bf7ee930-bd49-45ae-b1d5-d2da028844a0">
+				<flow-ref doc:name="Flow-ref to call-redshift-sys-api-flow" doc:id="79cf68c9-376c-4131-bb91-f32dae5b5521" name="call-redshift-sys-api-flow" />
+				<error-handler>
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="631657ad-068b-4dca-8b60-e087b01749d3" />
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert doc:name="Assert expression" doc:id="ce2b9c43-05ae-4949-afcf-93be3a03f685" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="call-salesforce-sys-api-test" doc:id="18952d7b-4294-48f5-be7e-28afde162308">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to update salesforce deployment object metrics" doc:id="928910f4-7e44-47c9-8e10-23527d3b60fe" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="c53f65aa-09e6-4fdd-b75d-17453a93fa30" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_payload.dwl')]" mediaType="application/json" />
+					<munit-tools:variables>
+						<munit-tools:variable key="metricsByDeploymentId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="metricsByAccountId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_2.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="updateResponse" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_3.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to update salesforce account object metrics" doc:id="126f2613-b639-4cb2-890f-9083bf1cf9d3" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="16df4e87-7cd9-47ec-8111-9f93081e4006" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_payload1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:variables>
+						<munit-tools:variable key="metricsByDeploymentId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_4.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="metricsByAccountId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_5.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="usageReportMapping" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_6.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="updateResponse" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_7.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to update salesforce interface-logs for account" doc:id="4878cb16-07ab-4f5f-bdaa-dd0727976241" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="3e52f903-a89f-4126-83a4-80547601b3b1" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_payload2.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://callsalesforcesysapitest\mock_attributes.dwl')]" />
+					<munit-tools:variables>
+						<munit-tools:variable key="metricsByDeploymentId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_8.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="metricsByAccountId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_9.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="intLogAcc" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_10.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="usageReportMapping" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_11.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="updateResponse" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_12.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="accountResponse" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_13.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to update salesforce interface-logs for deployment" doc:id="4d990f31-03fd-4700-ba4f-3a349198fcae" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="8abaa4f8-997a-4a33-b555-c2ff6967ebef" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_payload3.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://callsalesforcesysapitest\mock_attributes1.dwl')]" />
+					<munit-tools:variables>
+						<munit-tools:variable key="metricsByDeploymentId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_14.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="metricsByAccountId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_15.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="intLogDep" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_16.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="updateResponse" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_17.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="deploymentResponse" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_18.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="1af50d26-4557-4258-8d09-b089f36de664">
+				<munit:payload value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:variables>
+					<munit:variable key="metricsByDeploymentId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\set-event_variable_.dwl')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="metricsByAccountId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\set-event_variable_2.dwl')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="usageReportMapping" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\set-event_variable_6.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution>
+			<flow-ref doc:name="Flow-ref to call-salesforce-sys-api" doc:id="68a6a57d-8bdd-4d68-8a7f-dc5a4d93a342" name="call-salesforce-sys-api" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert doc:name="Assert payload" doc:id="773ddb30-d083-4c81-9cfb-984e78494434" message="The payload does not match">
+				<munit-tools:that><![CDATA[#[%dw 2.0
+import callsalesforcesysapitest::assert_expression_payload
+---
+assert_expression_payload::main({payload: {"0": payload."0".payload,"1": payload."1".payload}, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="call-salesforce-sys-api-negative-test" doc:id="00727e2d-1441-473d-8834-6fda8531c2aa">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to update salesforce deployment object metrics" doc:id="412dfb7a-1a81-4aba-a71e-14bf3e6b5644" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="c53f65aa-09e6-4fdd-b75d-17453a93fa30" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:UNAUTHORIZED" />
+					<munit-tools:variables >
+						<munit-tools:variable key="metricsByDeploymentId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="file" value="#[output text/csv --- readUrl('classpath://callsalesforcesysapitest\mock_variable_1.dwl')]" mediaType="text/csv" encoding="UTF-8" />
+						<munit-tools:variable key="metricsByAccountId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_2.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="sfTarget" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_3.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="forEachStart" value="#[output application/java --- readUrl('classpath://callsalesforcesysapitest\mock_variable_4.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="luSfDeployments" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_5.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="usageReportMapping" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_6.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="updateResponse" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_7.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to update salesforce account object metrics" doc:id="c055126e-4816-4f94-8345-acc93b2b6404" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="16df4e87-7cd9-47ec-8111-9f93081e4006" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:UNAUTHORIZED" />
+					<munit-tools:variables >
+						<munit-tools:variable key="metricsByDeploymentId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_8.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="file" value="#[output text/csv --- readUrl('classpath://callsalesforcesysapitest\mock_variable_9.dwl')]" mediaType="text/csv" encoding="UTF-8" />
+						<munit-tools:variable key="metricsByAccountId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_10.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="sfTarget" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_11.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="forEachStart" value="#[output application/java --- readUrl('classpath://callsalesforcesysapitest\mock_variable_12.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="luSfDeployments" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_13.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="usageReportMapping" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_14.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="updateResponse" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_15.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock Create Notification" doc:id="66cc577e-a4d2-4c8b-b838-b540b66c3276" processor="cloudhub:create-notification">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="d8f74327-44a3-4d97-a869-5657a1341077" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- {}]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<try doc:name="Try" doc:id="2214a4d3-14b7-4f90-8dde-2c0609df584e">
+				<flow-ref doc:name="Flow-ref to call-salesforce-sys-api" doc:id="2675deae-c37a-4ab3-af05-77657ceac421" name="call-salesforce-sys-api" />
+				<error-handler>
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="e462c049-b3a9-4e05-9b43-86f9cd10fdcb" />
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert doc:name="Assert expression" doc:id="ad869e9a-cf57-49e9-bc2f-f5c550d99101" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="call-salesforce-sys-api-negative-test-HTTP:CONNECTIVITY" doc:id="cb574bfc-b61b-4db0-9df0-d068dd25112e">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to update salesforce deployment object metrics" doc:id="85d4cf5e-9191-41bb-9b5c-b79ea08b2933" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="c53f65aa-09e6-4fdd-b75d-17453a93fa30" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:error typeId="HTTP:CONNECTIVITY" />
+					<munit-tools:variables>
+						<munit-tools:variable key="metricsByDeploymentId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="file" value="#[output text/csv --- readUrl('classpath://callsalesforcesysapitest\mock_variable_1.dwl')]" mediaType="text/csv" encoding="UTF-8" />
+						<munit-tools:variable key="metricsByAccountId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_2.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="sfTarget" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_3.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="forEachStart" value="#[output application/java --- readUrl('classpath://callsalesforcesysapitest\mock_variable_4.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="luSfDeployments" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_5.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="usageReportMapping" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_6.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="updateResponse" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_7.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to update salesforce account object metrics" doc:id="9ee0b285-6c11-4a35-95ca-fe0a673eed80" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="16df4e87-7cd9-47ec-8111-9f93081e4006" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:error typeId="HTTP:CONNECTIVITY" />
+					<munit-tools:variables>
+						<munit-tools:variable key="metricsByDeploymentId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_8.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="file" value="#[output text/csv --- readUrl('classpath://callsalesforcesysapitest\mock_variable_9.dwl')]" mediaType="text/csv" encoding="UTF-8" />
+						<munit-tools:variable key="metricsByAccountId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_10.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="sfTarget" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_11.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="forEachStart" value="#[output application/java --- readUrl('classpath://callsalesforcesysapitest\mock_variable_12.dwl')]" mediaType="application/java" encoding="UTF-8" />
+						<munit-tools:variable key="luSfDeployments" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_13.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="usageReportMapping" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_14.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="updateResponse" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_15.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock Create Notification" doc:id="05ad8475-d1f0-41ae-a435-44b9f14eff64" processor="cloudhub:create-notification">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="d8f74327-44a3-4d97-a869-5657a1341077" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- {}]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<try doc:name="Try" doc:id="a600cb8d-0adf-446e-84b5-fa29ef0f8829">
+				<flow-ref doc:name="Flow-ref to call-salesforce-sys-api" doc:id="3c34a4ad-70ef-4b4d-83dd-4e426e9f5f7c" name="call-salesforce-sys-api" />
+				<error-handler>
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="7eae5f54-decd-4f99-83af-a1b89d3b78df" />
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert doc:name="Assert expression" doc:id="f2b7b485-d93c-4a3a-b99b-973fb00fbbea" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="call-salesforce-sys-interface-logs-api-negative-test-HTTP" doc:id="7b02b2a6-3332-4bde-89fe-f982ace0a303">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to update salesforce deployment object metrics" doc:id="ee6108c2-c19e-48cb-b803-2a116fa41ab2" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="c53f65aa-09e6-4fdd-b75d-17453a93fa30" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_payload.dwl')]" mediaType="application/json" />
+					<munit-tools:variables>
+						<munit-tools:variable key="metricsByDeploymentId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="metricsByAccountId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_2.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="updateResponse" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_3.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to update salesforce account object metrics" doc:id="f606ad27-c95f-4025-aa01-b6ede41b2c68" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="16df4e87-7cd9-47ec-8111-9f93081e4006" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_payload1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:variables>
+						<munit-tools:variable key="metricsByDeploymentId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_4.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="metricsByAccountId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_5.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="usageReportMapping" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_6.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="updateResponse" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_7.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to update salesforce interface-logs for account" doc:id="fad732bf-9e4c-4d15-8f34-c521293d4996" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="3e52f903-a89f-4126-83a4-80547601b3b1" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:error typeId="HTTP:UNAUTHORIZED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to update salesforce interface-logs for deployment" doc:id="abe5071f-d2c1-4e68-bf27-6d1f73fdf40e" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="8abaa4f8-997a-4a33-b555-c2ff6967ebef" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:error typeId="HTTP:UNAUTHORIZED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock Create Notification" doc:id="3b2830b4-a8ef-466a-8ef5-e4493372764d" processor="cloudhub:create-notification">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="d8f74327-44a3-4d97-a869-5657a1341077" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- {}]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="1ffcdc2c-da5e-4038-a879-e3b941f9a9c4">
+				<munit:payload value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:variables>
+					<munit:variable key="metricsByDeploymentId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\set-event_variable_.dwl')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="metricsByAccountId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\set-event_variable_2.dwl')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="usageReportMapping" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\set-event_variable_6.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution>
+			<try doc:name="Try" doc:id="15f35277-a636-49d1-bb9b-19b2933b207f">
+				<flow-ref doc:name="Flow-ref to call-salesforce-sys-api" doc:id="c3466ee5-a17b-4196-9ad9-a556efc1a32a" name="call-salesforce-sys-api" />
+				<error-handler>
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="0827f8da-de94-4048-bc29-8c7890234f86" />
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation>
+	<munit-tools:assert doc:name="Assert expression" doc:id="3d07bf95-07b2-415f-8ddd-d96cdbb55399" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="call-salesforce-sys-interface-logs-api-negative-test-HTTP:CONNECTIVITY" doc:id="174f98e2-9cc8-4eed-8d5e-faa9dc2da3f4">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to update salesforce deployment object metrics" doc:id="523e319e-b84e-4b0b-95d0-11d24fc1b4b0" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="c53f65aa-09e6-4fdd-b75d-17453a93fa30" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_payload.dwl')]" mediaType="application/json" />
+					<munit-tools:variables>
+						<munit-tools:variable key="metricsByDeploymentId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="metricsByAccountId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_2.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="updateResponse" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_3.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to update salesforce account object metrics" doc:id="d34bef09-4a0c-4c5d-bbc7-7e460a6a6f1e" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="16df4e87-7cd9-47ec-8111-9f93081e4006" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_payload1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:variables>
+						<munit-tools:variable key="metricsByDeploymentId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_4.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="metricsByAccountId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_5.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="usageReportMapping" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_6.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="updateResponse" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\mock_variable_7.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to update salesforce interface-logs for account" doc:id="3e18a355-6c81-4c2c-bb1c-68e1b7dc0ab0" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="3e52f903-a89f-4126-83a4-80547601b3b1" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:error typeId="HTTP:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock HTTP Request to update salesforce interface-logs for deployment" doc:id="789cd4da-f199-4f98-bd1e-199283fd9ba4" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="8abaa4f8-997a-4a33-b555-c2ff6967ebef" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:error typeId="HTTP:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock Create Notification" doc:id="2d33d0b1-ded4-4299-aa90-2243593c2001" processor="cloudhub:create-notification">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="d8f74327-44a3-4d97-a869-5657a1341077" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- {}]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="13f1bddb-f9a3-4f62-9e96-88ccdcdf7bd0">
+				<munit:payload value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:variables>
+					<munit:variable key="metricsByDeploymentId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\set-event_variable_.dwl')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="metricsByAccountId" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\set-event_variable_2.dwl')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="usageReportMapping" value="#[output application/json --- readUrl('classpath://callsalesforcesysapitest\set-event_variable_6.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution>
+			<try doc:name="Try" doc:id="29bd29ca-d8d1-4f86-af19-f94059583810">
+				<flow-ref doc:name="Flow-ref to call-salesforce-sys-api" doc:id="11696a43-f719-46c4-a408-8e5ee9052261" name="call-salesforce-sys-api" />
+				<error-handler>
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="09875366-5010-468f-9bd5-fa18a06fcb20" />
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation>
+	<munit-tools:assert doc:name="Assert expression" doc:id="d376380d-7528-478d-82e5-b202331245ae" />
+		</munit:validation>
+	</munit:test>
+
+</mule>

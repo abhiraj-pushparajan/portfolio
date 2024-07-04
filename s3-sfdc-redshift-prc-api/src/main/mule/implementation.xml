@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:redshift="http://www.mulesoft.org/schema/mule/redshift"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:s3="http://www.mulesoft.org/schema/mule/s3" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/s3 http://www.mulesoft.org/schema/mule/s3/current/mule-s3.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/redshift http://www.mulesoft.org/schema/mule/redshift/current/mule-redshift.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd">
+	
+	<flow name="domino-usagedata-prc-apiFlow" doc:id="776de8f4-8b90-40a2-9215-cb4e1c2f1bed">
+		<scheduler doc:name="Scheduler" doc:id="e0127d78-7070-4b73-b1eb-84ab78d9cb4b" >
+			<scheduling-strategy >
+				<cron expression="${cron.expression}" timeZone="${cron.timezone}"/>
+			</scheduling-strategy>
+		</scheduler>
+		<logger level="INFO" doc:name="Initial Logger" doc:id="893eda74-2bba-4729-bcad-042d84fe94e1" message='#[output application/json&#10;---&#10;{&#10;"stage" : "Usage data process api started , calling s3 bucket",&#10;"timestamp": now(),&#10;"correlationId": correlationId,&#10;"level":"info"&#10;&#10;}]'/>
+		<until-successful maxRetries="${s3.reconnection.attempts}" doc:name="Until Successful" doc:id="a548ea1f-ae40-4150-afc0-0c95bc526e5b" millisBetweenRetries="${s3.reconnection.frequency}">
+				<s3:list-objects doc:name="fetch usage_details files" doc:id="02944d95-5bfe-454c-bc4c-51a32fd49ef0" config-ref="Amazon_S3_Configuration_DDL" bucketName='${s3.bucket}' prefix="${s3.origin}">
+			<reconnect frequency="${s3.reconnection.frequency}" count="${s3.reconnection.attempts}" />
+		</s3:list-objects>
+			</until-successful>
+		<logger level="DEBUG" doc:name="Debug Logger after list objects" doc:id="7145f05b-5990-4566-b414-8aadaa4b7f20" message="#[%dw 2.0&#10;&#10;output application/json&#10;&#10;---&#10;&#10;{&#10;&#10;	&quot;stage&quot;: 'output from S3 list object',&#10;&#10;	&quot;payload&quot;: payload,&#10;&#10;	&quot;timestamp&quot;: now(),&#10;&#10;	&quot;correlationId&quot;: correlationId,&#10;&#10;	description : &quot;Log output payload from list object in Debug mode&quot;,&#10;&#10;	&quot;category&quot;: &quot;com.domino.usagedata.prc.logging-levels.debug&quot;,&#10;&#10;	&quot;level&quot;:&quot;debug&quot;,&#10;&#10;	&#10;&#10;}]" category="com.domino.usagedata.prc.logging-levels.debug"/>
+		<logger level="INFO" doc:name="Logger after s3" doc:id="54d5fbcb-da3f-4601-80c3-36bf3964c3c8" message='#[output application/json&#10;---&#10;{&#10;"stage" : "File names from s3 buckets are successfully fetched",&#10;"timestamp": now(),&#10;"correlationId": correlationId,&#10;"level":"info"
+&#10;}]' />
+		<ee:transform doc:name="DW Select the files with_detailed_usage_in last24hrs and filter out files based on stage_name" doc:id="e084369a-783e-4ac1-ba3b-f12ec2a599cf">
+			<ee:message>
+				<ee:set-payload resource="dwl/filter_csv_files.dwl" />
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="sfTarget" ><![CDATA[%dw 2.0
+output application/java
+---
+[]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger before redshift request" doc:id="da134fd7-ea02-403a-ac95-b40d05c9af00" message='#[output application/json &#10;---&#10;{&#10;"stage" : "Calling redshift-sys-api to get data from tables",&#10;"timestamp": now(),&#10;"correlationId": correlationId,&#10;"level":"info"&#10;&#10;}]'/>
+		<flow-ref doc:name="call-redshift-sys-api" doc:id="a95f4fc3-e469-446a-a874-4b89881576df" name="call-redshift-sys-api-flow" />
+		<logger level="INFO" doc:name="Logger before For-Each" doc:id="40ade588-c917-493d-b23f-b83b5d4dc1b4" message='#[output application/json&#10;---&#10;{&#10;"stage" : "Successfully fetched redshift data, for further processing",&#10;"timestamp": now(),&#10;"correlationId": correlationId,&#10;"level":"info"&#10;&#10;}]'/>
+		<flow-ref doc:name="calling get-file-content-from-s3-sub-flow" doc:id="494ad9f6-6a03-47f7-9a89-574acc288036" name="get-file-content-from-s3-sub-flow" />
+		<logger level="INFO" doc:name="Logger at the end" doc:id="d9e59109-fd1c-4015-aab0-caf4a2271538" message='#[output application/json&#10;&#10;---&#10;&#10;{&#10;&#10;"stage" : "usagedata-prc-api execution completed",&#10;"timestamp": now(),&#10;"correlationId": correlationId,&#10;"level":"info"&#10;}]'/>
+		<logger level="DEBUG" doc:name="Debug logger at the end" doc:id="2ad54797-20aa-4067-9e3e-17d17a21854e" message="#[%dw 2.0&#10;&#10;output application/json&#10;&#10;---&#10;&#10;{&#10;&#10;	&quot;stage&quot;: 'usagedata-prc-api execution completed',&#10;&#10;	&quot;payload&quot;: payload,&#10;&#10;	&quot;timestamp&quot;: now(),&#10;&#10;	&quot;correlationId&quot;: correlationId,&#10;&#10;	description : &quot;Log output payload at the end of the usagedata-prc-api in Debug mode&quot;,&#10;&#10;	&quot;category&quot;: &quot;com.domino.usagedata.prc.logging-levels.debug&quot;,&#10;&#10;	&quot;level&quot;:&quot;debug&quot;&#10;&#10;	&#10;&#10;}]" category="com.domino.usagedata.prc.logging-levels.debug"/>
+	
+</flow>
+	<sub-flow name="get-file-content-from-s3-sub-flow" doc:id="218ae554-fd2c-488d-93b3-f32163b08d46">
+		<ee:transform doc:name="DW intLogAcc and intLogDep" doc:id="a0b8f628-93e9-486e-963e-dcbb3c4dea0a">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable resource="dwl/var_initialize_intLogAcc.dwl" variableName="accError" />
+			</ee:variables>
+		</ee:transform>
+		<logger level="DEBUG" doc:name="Debug logger for filename to fetch" doc:id="bdb98ac0-0b93-432b-8237-9351aabaa5e4" message="#[%dw 2.0
+&#10;
+&#10;output application/json
+&#10;
+&#10;---
+&#10;
+&#10;{
+&#10;
+&#10;	&quot;stage&quot;: 'Amazon S3 files to be fetched',
+&#10;
+&#10;	&quot;payload&quot;: payload,
+&#10;
+&#10;	&quot;timestamp&quot;: now(),
+&#10;
+&#10;	&quot;correlationId&quot;: correlationId,
+&#10;
+&#10;	description : &quot;Log the name of the files to be fetched from the Amazon S3&quot;,
+&#10;
+&#10;	&quot;category&quot;: &quot;com.domino.usagedata.prc.logging-levels.debug&quot;,
+&#10;
+&#10;	&quot;level&quot;:&quot;debug&quot;
+&#10;}]" category="com.domino.usagedata.prc.logging-levels.debug"/>
+		<set-variable value="#[now()]" doc:name="Var forEachStart" doc:id="48fdb802-8a55-4f66-a4eb-6d18310f82cd" variableName="forEachStart" />
+		<foreach doc:name="for Each file in S3 bucket" doc:id="d7a14a68-d697-433f-921b-e06f5ff4e5db">
+			<try doc:name="Try" doc:id="e2a146b6-b384-4971-a46c-e47e54ffd0f9" >
+				<until-successful maxRetries="${s3.reconnection.attempts}" doc:name="Until Successful" doc:id="bb107ff3-c218-4c7e-a068-0ee0aa6f7ac4" millisBetweenRetries="${s3.reconnection.frequency}">
+					<s3:get-object doc:name="Fetch file content using file name" doc:id="5d0c5a42-f26f-46fe-9c52-06fb2d76afce" config-ref="Amazon_S3_Configuration_DDL" bucketName="${s3.bucket}" key="#[payload]" target="file" outputMimeType="application/csv">
+					<reconnect count="${s3.reconnection.attempts}" frequency="${s3.reconnection.frequency}" />
+				</s3:get-object>
+				</until-successful>
+				<choice doc:name="Choice" doc:id="4030f92b-1bb3-484a-b231-737a398e795d" >
+				<when expression="${s3.usageReportsProcessedFlag}">
+					<ee:transform doc:name="DW destination" doc:id="3efc422f-5f77-4f2f-b611-02fef6fa702c">
+							<ee:message>
+							</ee:message>
+							<ee:variables >
+								<ee:set-variable resource="dwl/s3_file_destination.dwl" variableName="destination" />
+							
+</ee:variables>
+						</ee:transform>
+						<until-successful maxRetries="${s3.reconnection.attempts}" doc:name="Until Successful" doc:id="280015d9-714e-47cb-b18a-7eb553fcc8d4" millisBetweenRetries="${s3.reconnection.frequency}">
+							<s3:copy-object doc:name="Copy object" doc:id="132cf762-f8f7-400a-bb4a-bb156d849daa" config-ref="Amazon_S3_Configuration_DDL" sourceBucketName="${s3.bucket}" sourceKey="#[payload]" destinationKey="#[vars.destination]" target="copy">
+							<reconnect frequency="${s3.reconnection.frequency}" count="${s3.reconnection.attempts}" />
+						</s3:copy-object>
+						</until-successful>
+						<until-successful maxRetries="${s3.reconnection.attempts}" doc:name="Until Successful" doc:id="7ab57731-4640-4dc8-8975-15d301e12dfb" millisBetweenRetries="${s3.reconnection.frequency}">
+							<s3:delete-object doc:name="Delete object" doc:id="29fa5a26-48bc-406d-918f-da457f50cdac" config-ref="Amazon_S3_Configuration_DDL" bucketName="${s3.bucket}" key="#[payload]">
+							<reconnect count="${s3.reconnection.attempts}" frequency="${s3.reconnection.frequency}" />
+						</s3:delete-object>
+						</until-successful>
+				
+</when>
+			</choice>
+			<ee:transform doc:name="DW creating the payload" doc:id="007e76e8-5f02-44fb-a076-717648acc443">
+				<ee:message>
+						<ee:set-payload resource="dwl/forEach_payload.dwl" />
+				</ee:message>
+				<ee:variables>
+				</ee:variables>
+			</ee:transform>
+			<ee:transform doc:name="DW Adding file content to a varible" doc:id="7b050a31-24e6-4ade-b8e9-5698c82affcd">
+				<ee:message>
+				</ee:message>
+				<ee:variables>
+						<ee:set-variable resource="dwl/var_sfTarget.dwl" variableName="sfTarget" />
+				</ee:variables>
+			</ee:transform>
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="83ea853d-d085-497d-b09f-f561deb6c409" >
+						<ee:transform doc:name="Transform Message" doc:id="3df853dc-0baa-4405-b5f7-a7bba8f3335c" >
+							<ee:message >
+							</ee:message>
+							<ee:variables >
+								<ee:set-variable resource="dwl/var_intLogAcc-s3.dwl" variableName="accError" />
+							</ee:variables>
+						</ee:transform>
+						<flow-ref doc:name="call On-error-continue-for-For-Each" doc:id="a3c4e737-0828-4fc3-8f6d-7bc0af9e8346" name="On-error-continue-for-For-Each"/>
+					
+</on-error-continue>
+				</error-handler>
+			
+</try>
+		</foreach>
+		<logger level="INFO" doc:name="Logger after For-Each" doc:id="55a17127-d5ee-426d-ae0f-3dfe6cda40d2" message='#[output application/json&#10;---&#10;{&#10;"stage" : "Files are successfully processed in sequential",&#10;"timeTakenToProcess": now()- vars.forEachStart,&#10;"correlationId": correlationId,&#10;"level":"info"&#10;&#10;}]' />
+		<!-- <choice doc:name="Choice" doc:id="6cb0e0fc-1e8d-48a3-a315-55819e629a14" >
+			<when expression="#[vars.accError != []]">
+				<scatter-gather doc:name="Scatter-Gather" doc:id="8c7ad07d-d525-4ff6-a73d-5887b83eed33" >
+					<route >
+						<ee:transform doc:name="s3 deployment error payload" doc:id="4f08d793-297c-4083-a6de-f29e3fcff6e4">
+							<ee:message>
+							</ee:message>
+							<ee:variables>
+								<ee:set-variable resource="dwl/var_s3_intLogDep.dwl" variableName="intLogDep" />
+							</ee:variables>
+						</ee:transform>
+						<flow-ref doc:name="ref to salesforce-interface-logs-for-deployment-subflow" doc:id="ac443ac4-09db-4967-8425-cd570e256f3f" name="salesforce-interface-logs-for-deployment-subflow"/>
+					</route>
+					<route >
+						<ee:transform doc:name="s3 accounts error payload" doc:id="92aa84e1-0b44-4075-b03a-1a24ec745ff3">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+								<ee:set-variable resource="dwl/var_s3_intLogAcc.dwl" variableName="intLogAcc" />
+			</ee:variables>
+		</ee:transform>
+						<flow-ref doc:name="ref to salesforce-interface-logs-for-account-subflow" doc:id="36d9ae7b-a0d8-4e63-8de9-25f5f8b654ee" name="salesforce-interface-logs-for-account-subflow" />
+					</route>
+				</scatter-gather>
+			</when>
+		</choice> -->
+		<flow-ref doc:name="ref to calculate-metrics-flow" doc:id="8755f76e-7f26-411f-94cd-10a154ff4bae" name="calculate-metrics-sub-flow" />
+	</sub-flow>
+	<sub-flow name="calculate-metrics-sub-flow" doc:id="50129e08-b2be-47b2-9ff8-f4e763caf562">
+		<ee:dynamic-evaluate doc:name="DW to calculate usage metrics from runtime properties for Deployment Obj" doc:id="5556b6b6-e819-451c-a5b8-b6bf6607f53c" expression="#[\\code has removed]" target="metricsByDeploymentId" />
+		<ee:dynamic-evaluate doc:name="DW to calculate usage metrics from runtime properties for Account Obj" doc:id="33979a24-7674-47e0-a073-a236850455d9" expression="#[\\script has removed]" target="metricsByAccountId" />
+		<choice doc:name="Choice" doc:id="05c4c24f-59da-4fdb-a0ee-b243fbe38236">
+			<when expression="#[vars.metricsByDeploymentId == [] and vars.metricsByAccountId == []]">
+				<logger level="INFO" doc:name="Logger" doc:id="dcfba7af-bb82-4f75-845d-68c0b59b53bf" message='#[output application/json
+&#10;---
+&#10;{
+&#10;"stage" : "No records to update.",
+&#10;"timestamp": now(),
+&#10;"correlationId": correlationId,
+&#10;"level":"info"
+&#10;
+&#10;}]' />
+				<scatter-gather doc:name="Scatter-Gather" doc:id="d06dfa6a-4dcb-4e7a-a317-ab30ce4f6afa" >
+					<route >
+						<ee:transform doc:name="var intLogAcc" doc:id="7e356576-e398-4194-bb46-c1ddb770e3a6">
+					<ee:message>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable resource="dwl/var_noMetrics_intLogAcc.dwl" variableName="intLogAcc" />
+					</ee:variables>
+				</ee:transform>
+						<flow-ref doc:name="salesforce-interface-logs-for-account-subflow" doc:id="816e0cdf-1bbf-435a-ad16-5b0c75f23815" name="salesforce-interface-logs-for-account-subflow"/>
+					</route>
+					<route >
+						<ee:transform doc:name="var intLogDep" doc:id="1ea86174-3c40-4d0c-a9ba-a6cc9ce6f68f" >
+							<ee:message >
+							</ee:message>
+							<ee:variables >
+								<ee:set-variable resource="dwl/var_noMetrics_intLogDep.dwl" variableName="intLogDep" />
+							</ee:variables>
+						</ee:transform>
+						<flow-ref doc:name="salesforce-interface-logs-for-deployment-subflow" doc:id="6c89225f-8ad7-4104-8016-e64a4805a5df" name="salesforce-interface-logs-for-deployment-subflow"/>
+					</route>
+				</scatter-gather>
+			
+</when>
+			<otherwise>
+				<flow-ref doc:name="call-salesforce-sys-api" doc:id="df610000-519b-4166-9b07-03d129750154" name="call-salesforce-sys-api" />
+			</otherwise>
+		</choice>
+	</sub-flow>
+</mule>

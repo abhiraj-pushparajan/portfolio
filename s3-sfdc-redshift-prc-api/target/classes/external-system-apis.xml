@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:cloudhub="http://www.mulesoft.org/schema/mule/cloudhub" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/cloudhub http://www.mulesoft.org/schema/mule/cloudhub/current/mule-cloudhub.xsd">
+	<sub-flow name="salesforce-interface-logs-for-account-subflow" doc:id="759014c8-5367-4374-b12e-8e08083826d5" >
+		<try doc:name="Try" doc:id="e64735cf-c40e-461c-9fca-2e0c96f8eeb9" >
+			<until-successful maxRetries="${salesforce-api.reconnection.attempts}" doc:name="Until Successful" doc:id="3aaa3ce4-0e3b-423b-8e86-cc275ebaefaa" millisBetweenRetries="${salesforce-api.reconnection.frequency}">
+			<try doc:name="Try" doc:id="2528d124-8881-4089-ab6c-f03645ef81a6">
+			<http:request method="PUT" doc:name="HTTP Request to update salesforce interface-logs for account" doc:id="3e52f903-a89f-4126-83a4-80547601b3b1" config-ref="Salesforce_HTTP_Request_configuration1" path="${salesforce-api.interfaceLogs-path}" sendCorrelationId="ALWAYS" correlationId="#[correlationId]">
+			<http:body><![CDATA[#[vars.intLogAcc]]]></http:body>
+						<http:headers><![CDATA[#[output application/java
+---
+{
+	"interface_name" : p('salesforce-api.interfaceLogs-name.account')
+}]]]></http:headers>
+		
+</http:request>
+					<error-handler >
+						<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="37af86a4-22a1-43a9-8c24-6b69791f3d75" type="HTTP:CONNECTIVITY">
+							<flow-ref doc:name="error-connectivity" doc:id="fe645ed1-7bfe-4540-bcfa-8933aae0a986" name="error-connectivity"/>
+						</on-error-propagate>
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="9b448bec-49dc-44f8-a3b8-7f29393867df" type="ANY">
+							<flow-ref doc:name="general-error" doc:id="433c26a5-f99b-430a-9361-63242a7183ee" name="general-error"/>
+						</on-error-continue>
+					</error-handler>
+		</try>
+		</until-successful>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="5b5c14ed-1dbb-4410-9b3c-e2431d337d50" >
+					<flow-ref doc:name="On-error-propagate-for-SALESFORCE" doc:id="02ef7eef-aced-4a1c-8079-8e3575a7c349" name="On-error-propagate-for-SALESFORCE"/>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<choice doc:name="Choice" doc:id="4b2ca099-b875-40ef-939e-1979dfbb5bcd" >
+			<when expression="#[vars.error != null]">
+				<try doc:name="Try" doc:id="d63108f5-ec1a-44d1-8c45-f3ff4016f407" >
+					<raise-error doc:name="Raise error" doc:id="1357f21d-1ca9-4858-8e0f-ef81d6792796" type="REQUEST:INTERNAL_SERVER_ERROR" description="Internal error in domino-salesforce-sys-api" />
+					<error-handler >
+						<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="085f587e-6f19-4512-81e2-4bd0bce4100b" >
+							<flow-ref doc:name="On-error-propagate-for-SALESFORCE" doc:id="8c33ffa0-dd8e-47d1-ac56-aef0271795f9" name="On-error-propagate-for-SALESFORCE"/>
+						</on-error-propagate>
+					</error-handler>
+				</try>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger interface log response" doc:id="10e0e68c-3f4c-48a0-864a-c76d1de333f1" message='#[output application/json
+&#10;---
+&#10;if(payload.successful)({
+&#10;"stage" : "Interface-log updated Successfully",
+&#10;"Id":payload.items[0].id,
+&#10;"timestamp": now(),
+&#10;"correlationId": correlationId,
+&#10;"level":"info"
+&#10;
+&#10;}) else
+&#10;{
+&#10;"stage" : "Interface-log update failed",
+&#10;"timestamp": now(),
+&#10;"correlationId": correlationId,
+&#10;"level":"info"
+&#10;
+&#10;}]'/>
+			</otherwise>
+		</choice>
+	
+</sub-flow>
+	<sub-flow name="salesforce-interface-logs-for-deployment-subflow" doc:id="8b7b336c-7b6e-4115-998c-f70c10c14a73" >
+		<try doc:name="Try" doc:id="fb629135-49e7-444d-8a3c-ca82f0e454e7" >
+			<until-successful maxRetries="${salesforce-api.reconnection.attempts}" doc:name="Until Successful" doc:id="3d2573cf-156d-4a2d-b8b7-3a95a5108345" millisBetweenRetries="${salesforce-api.reconnection.frequency}">
+			<try doc:name="Try" doc:id="eddcf273-bb21-4ddf-974a-0b1de234bd35">
+			<http:request method="PUT" doc:name="HTTP Request to update salesforce interface-logs for deployment" doc:id="8abaa4f8-997a-4a33-b555-c2ff6967ebef" config-ref="Salesforce_HTTP_Request_configuration1" path="${salesforce-api.interfaceLogs-path}" sendCorrelationId="ALWAYS" correlationId="#[correlationId]">
+			<http:body><![CDATA[#[vars.intLogDep]]]></http:body>
+						<http:headers><![CDATA[#[output application/java
+---
+{
+	"interface_name" : p('salesforce-api.interfaceLogs-name.deployment')
+}]]]></http:headers>
+		
+</http:request>
+					<error-handler >
+						<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="40aed2ff-92f2-45f0-8109-4d7e5d23e99a" type="HTTP:CONNECTIVITY">
+							<flow-ref doc:name="error-connectivity" doc:id="079e30c3-a864-42f0-80ba-db7f5da468a9" name="error-connectivity"/>
+						</on-error-propagate>
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="a198af58-c699-4333-a6a5-d2a1b62eb4cd" type="ANY">
+							<flow-ref doc:name="general-error" doc:id="3382ef59-611e-4e7c-bef5-f23faad735dd" name="general-error"/>
+						</on-error-continue>
+					</error-handler>
+		</try>
+		</until-successful>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c58ea56f-6eb8-4625-bd96-2d34b71d6199" >
+					<flow-ref doc:name="On-error-propagate-for-SALESFORCE" doc:id="88ced963-37bf-420c-8f71-ca02dfdf844c" name="On-error-propagate-for-SALESFORCE"/>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<choice doc:name="Choice" doc:id="724e7cc0-a2b3-451d-9716-14449e5e07ad" >
+			<when expression="#[vars.error != null]">
+				<try doc:name="Try" doc:id="b60668e9-cfba-42a8-83a0-f1284f61f2c7" >
+					<raise-error doc:name="Raise error" doc:id="8643e669-cb8d-48cb-89e4-e35ab9b7b6d7" type="REQUEST:INTERNAL_SERVER_ERROR" description="Internal error in domino-salesforce-sys-api"/>
+					<error-handler >
+						<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="7233328b-7554-4da5-bc26-c3d49cfcd72d" >
+							<flow-ref doc:name="On-error-propagate-for-SALESFORCE" doc:id="7320587a-e529-4178-8fbe-2c30596dfaf8" name="On-error-propagate-for-SALESFORCE"/>
+						</on-error-propagate>
+					</error-handler>
+				</try>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger interface log response" doc:id="d25c12a8-55b9-4bc9-a706-b7f0934efaae" message='#[output application/json
+&#10;---
+&#10;if(payload.successful)({
+&#10;"stage" : "Interface-log updated Successfully",
+&#10;"Id":payload.items[0].id,
+&#10;"timestamp": now(),
+&#10;"correlationId": correlationId,
+&#10;"level":"info"
+&#10;
+&#10;}) else
+&#10;{
+&#10;"stage" : "Interface-log update failed",
+&#10;"timestamp": now(),
+&#10;"correlationId": correlationId,
+&#10;"level":"info"
+&#10;
+&#10;}]'/>
+			</otherwise>
+		</choice>
+	
+</sub-flow>
+	<flow name="call-redshift-sys-api-flow" doc:id="a61ed994-dbc3-4c7f-95c6-a0a429d0a05a">
+		<try doc:name="Try" doc:id="9aba863e-9e1d-49e5-9436-45e578493fa0">
+				<until-successful maxRetries="${redshift-api.reconnection.attempts}" doc:name="Until Successful" doc:id="cb52a4ea-72ce-462d-8acd-3adf1c736a57" millisBetweenRetries="${redshift-api.reconnection.frequency}">
+				<try doc:name="Try" doc:id="c57e900e-8669-479d-bd10-b0cb539f4a45" >
+					<http:request method="GET" doc:name="HTTP Request to fetch data from redshift usage_report_mapping" doc:id="30b4c0ab-458a-43c6-b2df-10522fac4f0a" config-ref="Redshift_HTTP_Request_configuration" path="${redshift-api.path}" target="usageReportMapping" sendCorrelationId="ALWAYS" correlationId="#[correlationId]">
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	columnNames : "deployment_id,deployment_url",
+	conditions : "deployment_url!=''",
+	tableName : "usage_report_mapping"
+}]]]></http:query-params>
+		</http:request>
+					<error-handler >
+						<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="72166fda-e590-47e5-93e3-ea3a234bf7e0" type="HTTP:CONNECTIVITY">
+							<flow-ref doc:name="error-connectivity" doc:id="e291befb-c706-432a-8e01-17724a54fc2b" name="error-connectivity"/>
+						
+</on-error-propagate>
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="9f76d2ff-f68b-4328-b70f-13008621fbc3" type="ANY">
+							<flow-ref doc:name="general-error" doc:id="0c427a46-d60e-4d04-b02b-ecc8aad42ba0" name="general-error"/>
+						</on-error-continue>
+					</error-handler>
+				</try>
+			</until-successful>
+			<error-handler>
+					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="3e9551bf-2fd2-495a-a20b-f47998e86ad2">
+						<flow-ref doc:name="On-error-propagate-for-REDSHIFT" doc:id="87da9ca6-d7e6-401d-bd2d-1fc0453b2979" name="On-error-propagate-for-REDSHIFT" />
+					
+</on-error-propagate>
+				</error-handler>
+			</try>
+		<choice doc:name="Choice" doc:id="cff7f702-f405-479e-a7e4-c7eba90d9f65" >
+			<when expression="#[vars.error != null]">
+				<try doc:name="Try" doc:id="0a6c8ae2-c179-4baa-931a-a1df25f8929d" >
+					<raise-error doc:name="Raise error" doc:id="b16c7c8a-6d7f-4372-aaeb-a628a98d4ef2" type="REQUEST:INTERNAL_SERVER_ERROR" description="Internal error in domino-redshift-sys-api"/>
+					<error-handler >
+						<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="dda94110-a45f-4282-ac02-9082836f8efe" >
+							<flow-ref doc:name="On-error-propagate-for-REDSHIFT" doc:id="5b1b2e79-795d-4ebe-8826-886777f010a5" name="On-error-propagate-for-REDSHIFT" />
+						</on-error-propagate>
+					</error-handler>
+				</try>
+			</when>
+		</choice>
+		<logger level="DEBUG" doc:name="Debug logger after usage_report_mapping redshift sapi call" doc:id="6a0c74e9-a707-4181-89f4-3f7775ba58f9" message="#[%dw 2.0&#10;&#10;output application/json&#10;&#10;---&#10;&#10;{&#10;&#10;	&quot;stage&quot;: 'response from redshift sapi',&#10;&#10;	&quot;payload&quot;: vars.usageReportMapping,&#10;&#10;	&quot;timestamp&quot;: now(),&#10;&#10;	&quot;correlationId&quot;: correlationId,&#10;&#10;	description : &quot;Log output payload from usage_report_mapping redshift sapi call in Debug mode&quot;,&#10;&#10;	&quot;category&quot;: &quot;com.domino.usagedata.prc.logging-levels.debug&quot;,&#10;&#10;	&quot;level&quot;:&quot;debug&quot;,&#10;&#10;	&#10;&#10;}]" category="com.domino.usagedata.prc.logging-levels.debug"/>
+		<try doc:name="Try" doc:id="d28b5890-7ee2-46fa-ba19-7ccf06c0e616">
+				<until-successful maxRetries="${redshift-api.reconnection.attempts}" doc:name="Until Successful" doc:id="9340c2a6-8fd4-42dc-afe4-1dd88bcec14c" millisBetweenRetries="${redshift-api.reconnection.frequency}">
+				<try doc:name="Try" doc:id="3102e605-3c10-437b-b21a-79cb9b04c067" >
+					<http:request method="GET" doc:name="HTTP Request to fetch data from redshift lu_sf_deployments" doc:id="63dd430f-c01e-4527-a04a-25014abcb1b9" target="luSfDeployments" config-ref="Redshift_HTTP_Request_configuration" path="${redshift-api.path}" sendCorrelationId="ALWAYS" correlationId="#[correlationId]">
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	columnNames : "deployment_id,account_id,deployment_url,licensed_deployment,stage_nm",
+	conditions : "stage_nm!=''",
+	tableName : "lu_sf_deployments"
+}]]]></http:query-params>
+		</http:request>
+					<error-handler >
+					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="8ffb9285-7f22-4767-a514-eb7051c4a578" type="HTTP:CONNECTIVITY">
+							<flow-ref doc:name="error-connectivity" doc:id="4d4a309a-981b-4ba4-9d02-2c765c6c7afe" name="error-connectivity"/>
+						
+</on-error-propagate>
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="36cd0e67-5123-4445-b5b6-a50753b1e952" type="ANY">
+							<flow-ref doc:name="general-error" doc:id="7ff1b27a-8602-4157-a4c2-af6a1088e8de" name="general-error"/>
+						
+</on-error-continue>
+					</error-handler>
+				</try>
+			</until-successful>
+			<error-handler>
+					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="dfef7607-c0d7-42fb-b271-98010d418e0c">
+						<flow-ref doc:name="On-error-propagate-for-REDSHIFT" doc:id="d65df67e-b06a-46ab-a878-612befdd1b39" name="On-error-propagate-for-REDSHIFT" />
+					</on-error-propagate>
+				</error-handler>
+			</try>
+			<choice doc:name="Choice" doc:id="899e6cf9-7261-49b8-8d81-0703f98c6d3e" >
+			<when expression="#[vars.error != null]">
+				<try doc:name="Try" doc:id="5d71a0ab-58e4-4a28-b789-1ae02b8b4698" >
+					<raise-error doc:name="Raise error" doc:id="58e23345-b2ed-48ee-8426-5a02209f7b93" type="REQUEST:INTERNAL_SERVER_ERROR" description="Internal error in domino-redshift-sys-api"/>
+					<error-handler >
+						<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="acae03ae-f022-469b-a2cc-5b3b3187c20c" >
+							<flow-ref doc:name="On-error-propagate-for-REDSHIFT" doc:id="d5e00d8d-7651-4be1-9110-da3608aa5ce0" name="On-error-propagate-for-REDSHIFT" />
+						</on-error-propagate>
+					</error-handler>
+				</try>
+			</when>
+		</choice>
+		<logger level="DEBUG" doc:name="Debug logger after lu_sf_deployment redshift sapi call" doc:id="72ba7af9-1f8e-4ad4-a545-34e47aa90c2b" message="#[%dw 2.0&#10;&#10;output application/json&#10;&#10;---&#10;&#10;{&#10;&#10;	&quot;stage&quot;: 'response from redshift sapi',&#10;&#10;	&quot;payload&quot;: vars.luSfDeployments,&#10;&#10;	&quot;timestamp&quot;: now(),&#10;&#10;	&quot;correlationId&quot;: correlationId,&#10;&#10;	description : &quot;Log output payload from lu_sf_deployment redshift sapi call in Debug mode&quot;,&#10;&#10;	&quot;category&quot;: &quot;com.domino.usagedata.prc.logging-levels.debug&quot;,&#10;&#10;	&quot;level&quot;:&quot;debug&quot;,&#10;&#10;	&#10;&#10;}]" category="com.domino.usagedata.prc.logging-levels.debug"/>
+	</flow>
+	<flow name="call-salesforce-sys-api" doc:id="45533b06-b602-4057-ad02-a778d953a8a5" >
+		<logger level="INFO" doc:name="Logger Before Salesforce" doc:id="1283599b-17d2-413d-92d4-55484484f595" message='#[output application/json&#10;---&#10;{&#10;"stage" : "Metrics are calculated &amp; sent to salesforce for update",&#10;"timeStamp": now(),&#10;"correlationId": correlationId,&#10;"level":"info"
+&#10;}]' />
+		<logger level="DEBUG" doc:name="Debug Logger before salesforce sapi" doc:id="b9649995-c56a-45c6-9019-c7e83a663207" message="#[%dw 2.0&#10;&#10;output application/json&#10;&#10;---&#10;&#10;{&#10;&#10;	&quot;stage&quot;: 'calling salesforce sapi',&#10;&#10;	&quot;payload&quot;: payload,&#10;&#10;	&quot;timestamp&quot;: now(),&#10;&#10;	&quot;correlationId&quot;: correlationId,&#10;&#10;	description : &quot;Log input payload before salesforce sapi call in Debug mode&quot;,&#10;&#10;	&quot;category&quot;: &quot;com.domino.usagedata.prc.logging-levels.debug&quot;,&#10;&#10;	&quot;level&quot;:&quot;debug&quot;,&#10;&#10;	&#10;&#10;}]" category="com.domino.usagedata.prc.logging-levels.debug"/>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="9983ea08-4edc-4c85-aad8-bc26adfdfe93" >
+			<route >
+				<try doc:name="Try" doc:id="13545623-8330-42bc-80d9-0177f450c13b" >
+					<until-successful maxRetries="${salesforce-api.reconnection.attempts}" doc:name="Until Successful" doc:id="2c98e046-3c37-463f-a0b9-ff59382e08b6" millisBetweenRetries="${salesforce-api.reconnection.frequency}">
+					<try doc:name="Try" doc:id="6ee03d71-9725-4fe3-972a-82fe6df6a8c6">
+					<http:request method="PUT" doc:name="HTTP Request to update salesforce deployment object metrics" doc:id="c53f65aa-09e6-4fdd-b75d-17453a93fa30" config-ref="Salesforce_HTTP_Request_configuration1" path="${salesforce-api.deployment-path}" target="updateResponse" sendCorrelationId="ALWAYS" correlationId="#[correlationId]">
+			<http:body><![CDATA[#[vars.metricsByDeploymentId]]]></http:body>
+						<http:headers><![CDATA[#[output application/java
+---
+{
+	"interface_name" : p('salesforce-api.interfaceLogs-name.deployment')
+}]]]></http:headers>
+		
+</http:request>
+					<error-handler>
+						<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="99654855-28f8-42c6-88cf-54b3b9e8ce72" type="HTTP:CONNECTIVITY">
+									<flow-ref doc:name="error-connectivity" doc:id="3c016c0e-da02-4299-946b-ca28ae2a21ea" name="error-connectivity"/>
+						</on-error-propagate>
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="3340953a-7cb5-4d19-a9af-cb433239e761" type="ANY">
+									<flow-ref doc:name="general-error" doc:id="19c909ca-69d8-4a1d-bf98-c9a90b947160" name="general-error"/>
+						</on-error-continue>
+					</error-handler>
+				</try>
+				</until-successful>
+					<error-handler >
+						<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="7ad8da43-7d27-4338-a270-427f3ddf6f3f" >
+							<flow-ref doc:name="On-error-propagate-for-SALESFORCE" doc:id="99f1e631-16e4-4042-b18c-e7d5596d13bb" name="On-error-propagate-for-SALESFORCE"/>
+							<!-- <flow-ref doc:name="salesforce-raise-notification-sub-flow" doc:id="5fb35a09-0b85-464b-8f05-131f6081208d" name="salesforce-raise-notification-sub-flow"/> -->
+						</on-error-propagate>
+					</error-handler>
+				</try>
+				<choice doc:name="Choice" doc:id="7a47da79-d5a8-4317-a87d-84c6e412989f" >
+					<when expression="#[vars.error != null]">
+						<try doc:name="Try" doc:id="bec20e2a-a324-4597-a238-5a513d88d388" >
+							<raise-error doc:name="Raise error" doc:id="01cb1ea8-bf0c-4291-adc6-73e50cb45364" type="REQUEST:INTERNAL_SERVER_ERROR" description="Internal error in domino-salesforce-sys-api" />
+							<error-handler >
+								<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="fbb37e7d-efd0-47df-9906-24b4583b5b6e" >
+									<flow-ref doc:name="On-error-propagate-for-SALESFORCE" doc:id="c3daa8d5-c993-4492-a5ba-96abd48fcde2" name="On-error-propagate-for-SALESFORCE"/>
+									<!-- <flow-ref doc:name="salesforce-raise-notification-sub-flow" doc:id="eeb1e21c-b3a1-483d-9956-c569ebb713d4" name="salesforce-raise-notification-sub-flow"/> -->
+								</on-error-propagate>
+							</error-handler>
+						</try>
+					</when>
+				</choice>
+				<ee:transform doc:name="DW deploymentResponse" doc:id="3c94370c-1ad9-431f-b54d-5e53b805f720">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+						<ee:set-variable resource="dwl/var_deploymentResponse.dwl" variableName="deploymentResponse" />
+			
+</ee:variables>
+		</ee:transform>
+				<ee:transform doc:name="DW Deployment interface-logs body" doc:id="54e4d399-ec6a-45d8-8986-64b258154be3">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+						<ee:set-variable resource="dwl/var_intLogDep.dwl" variableName="intLogDep" />
+			
+</ee:variables>
+		</ee:transform>
+				<flow-ref doc:name="salesforce interface-logs-for-deployment-subflow" doc:id="7873c1de-7661-434a-82ef-ff7046887d0f" name="salesforce-interface-logs-for-deployment-subflow" />
+			
+
+</route>
+			<route >
+				<try doc:name="Try" doc:id="42bfab2d-3075-4388-9847-de5b1e2960b0" >
+					<until-successful maxRetries="${salesforce-api.reconnection.attempts}" doc:name="Until Successful" doc:id="d7de6405-d5f4-4b3c-be27-74fe6828ebae" millisBetweenRetries="${salesforce-api.reconnection.frequency}">
+						<try doc:name="Try" doc:id="98d2ef1b-afcf-4e38-9af2-6d7a5157248f">
+					<http:request method="PUT" doc:name="HTTP Request to update salesforce account object metrics" doc:id="16df4e87-7cd9-47ec-8111-9f93081e4006" config-ref="Salesforce_HTTP_Request_configuration1" path="${salesforce-api.account-path}" target="updateResponse" sendCorrelationId="ALWAYS" correlationId="#[correlationId]">
+			<http:body><![CDATA[#[vars.metricsByAccountId]]]></http:body>
+						<http:headers><![CDATA[#[output application/java
+---
+{
+	"interface_name" : p('salesforce-api.interfaceLogs-name.account')
+}]]]></http:headers>
+		
+</http:request>
+					<error-handler>
+						<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="9f22c14e-00ef-4375-a7a0-a50b96beda46" type="HTTP:CONNECTIVITY">
+									<flow-ref doc:name="error-connectivity" doc:id="d2b3a08f-5e0c-472a-8978-a55c12cfe289" name="error-connectivity"/>
+						</on-error-propagate>
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="f211283e-744d-433e-a39e-3953cf8989b4" type="ANY">
+									<flow-ref doc:name="general-error" doc:id="86aa9507-6657-4086-8765-8fcf0b76d060" name="general-error"/>
+						</on-error-continue>
+					</error-handler>
+				</try>
+					</until-successful>
+					<error-handler >
+						<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="673fe23e-9cbf-40ab-83f2-0b6aec9fe4d4" >
+							<flow-ref doc:name="On-error-propagate-for-SALESFORCE" doc:id="91944850-243a-45ea-b574-8fabb6d08f92" name="On-error-propagate-for-SALESFORCE" />
+							<!-- <flow-ref doc:name="salesforce-raise-notification-sub-flow" doc:id="4a8fb029-1fc7-482c-a7c6-bf6f80023dd3" name="salesforce-raise-notification-sub-flow"/> -->
+						</on-error-propagate>
+					</error-handler>
+				</try>
+				<choice doc:name="Choice" doc:id="c1d8c9ff-40bf-430c-bbf3-7a15c82c6fdf" >
+					<when expression="#[vars.error != null]">
+						<try doc:name="Try" doc:id="c382d5d4-a40b-4e12-b3ce-fb8187211424" >
+							<raise-error doc:name="Raise error" doc:id="4e63a187-ef2e-4bcb-a8c2-0fd8932a1f60" type="REQUEST:INTERNAL_SERVER_ERROR" description="Internal error in domino-salesforce-sys-api" />
+							<error-handler >
+								<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="75cf4ed7-4893-4468-922c-0484ef921173" >
+									<flow-ref doc:name="On-error-propagate-for-SALESFORCE" doc:id="e548003a-94e7-431c-883b-0080e6400332" name="On-error-propagate-for-SALESFORCE"/>
+									<!-- <flow-ref doc:name="salesforce-raise-notification-sub-flow" doc:id="3a534d41-4dc0-4952-ab1c-f1b589f10203" name="salesforce-raise-notification-sub-flow"/> -->
+								</on-error-propagate>
+							</error-handler>
+						</try>
+					</when>
+				</choice>
+				<ee:transform doc:name="DW accountResponse" doc:id="b6e5418b-dbfe-4f53-b3a0-48b15705c4d5">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+						<ee:set-variable resource="dwl/var_accountResponse.dwl" variableName="accountResponse" />
+			
+</ee:variables>
+		</ee:transform>
+				<ee:transform doc:name="DW Account interface-logs body" doc:id="3c3204b5-8072-447e-a996-80f928450ef3">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+						<ee:set-variable resource="dwl/intLogAcc.dwl" variableName="intLogAcc" />
+			
+</ee:variables>
+		</ee:transform>
+				<flow-ref doc:name="salesforce interface-logs-for-account-subflow" doc:id="50075949-7ebf-4c2d-b372-38711db10850" name="salesforce-interface-logs-for-account-subflow" />
+			
+
+</route>
+		</scatter-gather>
+	
+</flow>
+	<sub-flow name="error-connectivity" doc:id="c9da1f52-3423-4e12-a8fd-afa7d092eeec" >
+		<set-variable value="#[{error:{'type':error.errorType.identifier,
+&#10;
+&#10;	'message':error.description
+&#10;
+&#10;}}]" doc:name="error" doc:id="de4c5c09-dd1e-48e1-95ef-348b7ed31511" variableName="error"/>
+	</sub-flow>
+	<sub-flow name="general-error" doc:id="33f77a05-1074-468a-bd54-dd8835081f77" >
+		<set-variable value="#[if(error.muleMessage.typedValue !=null) error.muleMessage.typedValue
+&#10;else
+&#10;{error:{'type':error.errorType.identifier,
+&#10;
+&#10;	'message':error.description
+&#10;
+&#10;}}]" doc:name="error" doc:id="3e441c63-ae47-4c98-b7f9-ba4297627bf6" variableName="error"/>
+	</sub-flow>
+</mule>

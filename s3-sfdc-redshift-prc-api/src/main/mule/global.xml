@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:cloudhub="http://www.mulesoft.org/schema/mule/cloudhub"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:s3="http://www.mulesoft.org/schema/mule/s3" xmlns:redshift="http://www.mulesoft.org/schema/mule/redshift" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/redshift http://www.mulesoft.org/schema/mule/redshift/current/mule-redshift.xsd
+http://www.mulesoft.org/schema/mule/s3 http://www.mulesoft.org/schema/mule/s3/current/mule-s3.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/cloudhub http://www.mulesoft.org/schema/mule/cloudhub/current/mule-cloudhub.xsd">
+	<global-property doc:name="Global Property" doc:id="2d605d9d-a81b-4bfe-b7fe-a3c251a76401" name="env" value="dev" />
+	<http:request-config name="Redshift_HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="27ce64e1-41e1-408b-a18c-e60e7b3d9d70" responseTimeout="${redshift-api.response.timeout}">
+		<http:request-connection host="${redshift-api.host}" port="${redshift-api.port}" connectionIdleTimeout="300000000">
+			<reconnection >
+				<reconnect frequency="${redshift-api.reconnection.frequency}" count="${redshift-api.reconnection.attempts}" />
+			</reconnection>
+		</http:request-connection>
+	</http:request-config>
+	<http:request-config name="Salesforce_HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="5fae48d9-f4db-4007-943a-d0201a7177f0" responseTimeout="${salesforce-api.response.timeout}">
+		<http:request-connection host="${salesforce-api.host}" port="${salesforce-api.port}" >
+		</http:request-connection>
+	</http:request-config>
+	<s3:config name="Amazon_S3_Configuration_DDL" doc:name="Amazon S3 Configuration" doc:id="95e6e6aa-2439-4df1-a582-f70486664532" >
+		<s3:basic-connection accessKey="${secure::s3.access-key}" secretKey="${secure::s3.secret-key}" region="${s3.region}" connectionTimeout="${s3.timeOut.connection}" socketTimeout="${s3.timeOut.socket}" maxConnections="${s3.max-connections}">
+			<reconnection >
+				<reconnect frequency="${s3.reconnection.frequency}" count="${s3.reconnection.attempts}" />
+			</reconnection>
+
+		</s3:basic-connection>
+	</s3:config>
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="bd7ab1b2-6c87-48d5-a47e-83f1ad8bc3c9" file="properties\domino-usagedata-prc-api-secure-${env}.yaml" key="${encryptionKey}" >
+	</secure-properties:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="2ec33781-c502-4fa3-bf1d-6c695f74db13" file="properties\domino-usagedata-prc-api-secure-${env}.yaml" />
+	<configuration doc:name="Configuration" doc:id="ffcd6dc0-101f-4f3c-ae75-20760858397b" defaultErrorHandler-ref="globalError_Handler" />
+	<configuration-properties doc:name="Configuration properties" doc:id="cf4b3723-935a-41c4-9f3c-465da7643edf" file="properties\domino-usagedata-prc-api-${env}.yaml" />
+	<global-property doc:name="Global Property" doc:id="946c8443-7194-405f-a6d0-607bc3c8f507" name="encryptionKey" value="z^4tFHMT8QEE@Cuu" />
+	<cloudhub:config name="CloudHub_Config" doc:name="CloudHub Config" doc:id="e8af1668-6a8a-4681-87c9-bfdc8047af8e" >
+		<cloudhub:connection username="${secure::cloudhub.user}" password="${secure::cloudhub.password}" environment="${cloudhub.environment}"/>
+	</cloudhub:config>
+	
+</mule>
