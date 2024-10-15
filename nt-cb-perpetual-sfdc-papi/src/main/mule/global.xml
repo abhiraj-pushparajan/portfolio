@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd  http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+    <http:listener-config name="nt-cb-perpetual-sfdc-papi-httpListenerConfig">
+        <http:listener-connection host="${http.host}" port="${http.port}" readTimeout="${http.readTimeout}"/>
+    </http:listener-config>
+    <apikit:config name="nt-cb-perpetual-sfdc-papi-config" api="resource::ac3eec81-cfc7-4431-9f90-aede9cff21ec:nt-cb-perpetual-sfdc-papi:1.0.2:raml:zip:nt-cb-perpetual-sfdc-papi.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <configuration-properties doc:name="Configuration properties" doc:id="bf60334a-f5b6-4c60-aeac-faf8a96d79f7" file="productLookup.yaml" />
+    <salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="e5fa4824-b2fa-4d3f-a189-fc8cc75588d8">
+		<salesforce:jwt-connection audienceUrl="${salesforce.audienceUrl}" consumerKey="${secure::salesforce.consumerKey}" keyStore="certs/salesforce-${mule.env}.jks" storePassword="${secure::salesforce.storePassword}" certificateAlias="${salesforce.certificateAlias}" principal="${salesforce.principal}" tokenEndpoint="${salesforce.tokenEndpoint}">
+			<reconnection >
+				<reconnect frequency="${salesforce.reconnection.milliseconds}" count="${salesforce.reconnection.attempts}" />
+			</reconnection>
+		</salesforce:jwt-connection>
+    </salesforce:sfdc-config>
+    <configuration-properties doc:name="Configuration properties" doc:id="eb306278-3928-400b-9789-3fd4adc98a1e" file="config/${mule.env}-config.yaml" />
+    <global-property doc:name="Global Property" doc:id="3b495cc1-289b-43a8-a128-ef2f5af6d934" name="mule.env" value="dev" />
+    <configuration-properties doc:name="Configuration properties" doc:id="ce8dae46-513c-48c8-b8dd-873f72797955" file="config/common.yaml" />
+    <os:object-store name="Object_store" doc:name="Object store" doc:id="90c506a8-6081-4803-a634-890a4fc5487b" />
+    <secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="344a10ef-7b64-465a-8439-149431d72575" file="config/${mule.env}-secure-config.yaml" key="${secureKey}" />
+    <http:request-config name="HTTP_Request_configuration_sendMail" doc:name="HTTP Request configuration" doc:id="d4a47df9-a526-401c-aa5f-df54a78856f3" basePath="${sendMail.basePath}">
+        <http:request-connection protocol="HTTPS" host="${sendMail.host}" port="${sendMail.port}">
+            <tls:context>
+                <tls:trust-store insecure="true" />
+            </tls:context>
+        </http:request-connection>
+    </http:request-config>
+	<api-gateway:autodiscovery apiId="${autoDiscoveryId}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="c092c394-f402-4f74-9284-f8573d3be65e" flowRef="nt-cb-perpetual-sfdc-papi-main" />
+	<os:object-store name="create-report" doc:name="Object store" doc:id="15f582be-3662-4b0f-9df4-4f2020773df1" />
+	<global-property doc:name="Global Property" doc:id="e541309a-3f5d-4c5d-af59-ed52210a8ccd" name="secureKey" value="T78xYP2kBnP59nIA" />
+</mule>

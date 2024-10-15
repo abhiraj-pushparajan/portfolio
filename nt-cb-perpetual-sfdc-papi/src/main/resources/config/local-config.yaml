@@ -1,0 +1,25 @@
+sfdc :
+  Pricebook2Id : ""
+  OwnerId : ""
+  RecordTypeId : ""
+  reconnection:
+    attempts: "3"
+    milliseconds: "30000"
+
+# Salesforce configurations
+salesforce:
+  certificateAlias: ""
+  principal: ""
+  tokenEndpoint: "https://test.salesforce.com/services/oauth2/token"
+  audienceUrl: "https://test.salesforce.com"
+  reconnection:
+    attempts: "3"
+    milliseconds: "30000"
+    
+sendMail:
+  host: ""
+  basePath: ""
+  port: "443"
+  path: "send"
+  sender: ""
+  receipients: ["abhiraj.p@domain.com"]

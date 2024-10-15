@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_81af2742_b48c_47ba_86ff_f5f403f66602_Output_Variables_keysOfPayload = Any
+

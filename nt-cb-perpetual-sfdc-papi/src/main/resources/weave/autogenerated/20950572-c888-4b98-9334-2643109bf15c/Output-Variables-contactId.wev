@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_20950572_c888_4b98_9334_2643109bf15c_Output_Variables_contactId = Any
+

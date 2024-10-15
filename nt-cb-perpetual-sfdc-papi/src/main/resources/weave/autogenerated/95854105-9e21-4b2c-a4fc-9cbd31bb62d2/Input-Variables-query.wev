@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_95854105_9e21_4b2c_a4fc_9cbd31bb62d2_Input_Variables_query = Any
+

@@ -1,0 +1,9 @@
+%dw 2.0
+
+type auto_95854105_9e21_4b2c_a4fc_9cbd31bb62d2_Output_Variables_opportunityId = Array<{ _?: java_lang_Object }>
+type java_lang_Object = {|  |} {"typeAlias": "Object",
+"class": "java.lang.Object",
+"typeId": "java.lang.Object"}
+
+
+

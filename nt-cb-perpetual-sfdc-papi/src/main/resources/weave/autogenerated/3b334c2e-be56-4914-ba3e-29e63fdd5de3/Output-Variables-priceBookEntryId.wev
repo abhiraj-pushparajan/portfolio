@@ -1,0 +1,86 @@
+%dw 2.0
+
+type auto_3b334c2e_be56_4914_ba3e_29e63fdd5de3_Output_Variables_priceBookEntryId = {|
+  queryId?: String, 
+  searchRecords?: Array<org_mule_extension_salesforce_api_search_SearchResult_SearchRecord>, 
+  searchResultsMetadata?: org_mule_extension_salesforce_api_search_SearchResult_SearchResultsMetadata
+|} {"typeAlias": "SearchResult",
+"class": "org.mule.extension.salesforce.api.search.SearchResult",
+"typeId": "org.mule.extension.salesforce.api.search.SearchResult"}
+type org_mule_extension_salesforce_api_search_SearchResult_SearchRecord = {|
+  record?: { _?: java_lang_Object }, 
+  searchRecordMetadata?: org_mule_extension_salesforce_api_search_SearchResult_SearchRecord_SearchRecordMetadata, 
+  snippet?: org_mule_extension_salesforce_api_search_SearchResult_SearchRecord_SearchSnippet
+|} {"typeAlias": "SearchRecord",
+"class": "org.mule.extension.salesforce.api.search.SearchResult\$SearchRecord",
+"typeId": "org.mule.extension.salesforce.api.search.SearchResult.SearchRecord"}
+type org_mule_extension_salesforce_api_search_SearchResult_SearchRecord_SearchRecordMetadata = {| spellCorrected?: Boolean {"typeId": "boolean"} |} {"typeAlias": "SearchRecordMetadata",
+"class": "org.mule.extension.salesforce.api.search.SearchResult\$SearchRecord\$SearchRecordMetadata",
+"typeId": "org.mule.extension.salesforce.api.search.SearchResult.SearchRecord.SearchRecordMetadata"}
+
+
+type org_mule_extension_salesforce_api_search_SearchResult_SearchRecord_SearchSnippet = {|
+  text?: String, 
+  wholeFields?: Array<org_mule_extension_salesforce_api_search_SearchResult_SearchRecord_SearchSnippet_NameValuePair>
+|} {"typeAlias": "SearchSnippet",
+"class": "org.mule.extension.salesforce.api.search.SearchResult\$SearchRecord\$SearchSnippet",
+"typeId": "org.mule.extension.salesforce.api.search.SearchResult.SearchRecord.SearchSnippet"}
+type org_mule_extension_salesforce_api_search_SearchResult_SearchRecord_SearchSnippet_NameValuePair = {|
+  name?: String, 
+  value?: String
+|} {"typeAlias": "NameValuePair",
+"class": "org.mule.extension.salesforce.api.search.SearchResult\$SearchRecord\$SearchSnippet\$NameValuePair",
+"typeId": "org.mule.extension.salesforce.api.search.SearchResult.SearchRecord.SearchSnippet.NameValuePair"}
+
+
+
+
+type java_lang_Object = {|  |} {"typeAlias": "Object",
+"class": "java.lang.Object",
+"typeId": "java.lang.Object"}
+
+
+
+
+type org_mule_extension_salesforce_api_search_SearchResult_SearchResultsMetadata = {|
+  entityLabelMetadata?: Array<org_mule_extension_salesforce_api_search_SearchResult_SearchResultsMetadata_LabelsSearchMetadata>, 
+  entityMetadata?: Array<org_mule_extension_salesforce_api_search_SearchResult_SearchResultsMetadata_EntitySearchMetadata>
+|} {"typeAlias": "SearchResultsMetadata",
+"class": "org.mule.extension.salesforce.api.search.SearchResult\$SearchResultsMetadata",
+"typeId": "org.mule.extension.salesforce.api.search.SearchResult.SearchResultsMetadata"}
+type org_mule_extension_salesforce_api_search_SearchResult_SearchResultsMetadata_EntitySearchMetadata = {|
+  entityName?: String, 
+  fieldMetadata?: Array<org_mule_extension_salesforce_api_search_SearchResult_SearchResultsMetadata_EntitySearchMetadata_FieldLevelSearchMetadata>
+|} {"typeAlias": "EntitySearchMetadata",
+"class": "org.mule.extension.salesforce.api.search.SearchResult\$SearchResultsMetadata\$EntitySearchMetadata",
+"typeId": "org.mule.extension.salesforce.api.search.SearchResult.SearchResultsMetadata.EntitySearchMetadata"}
+type org_mule_extension_salesforce_api_search_SearchResult_SearchResultsMetadata_EntitySearchMetadata_FieldLevelSearchMetadata = {|
+  label?: String, 
+  name?: String, 
+  "type"?: String
+|} {"typeAlias": "FieldLevelSearchMetadata",
+"class": "org.mule.extension.salesforce.api.search.SearchResult\$SearchResultsMetadata\$EntitySearchMetadata\$FieldLevelSearchMetadata",
+"typeId": "org.mule.extension.salesforce.api.search.SearchResult.SearchResultsMetadata.EntitySearchMetadata.FieldLevelSearchMetadata"}
+
+
+
+
+type org_mule_extension_salesforce_api_search_SearchResult_SearchResultsMetadata_LabelsSearchMetadata = {|
+  entityFieldLabels?: Array<org_mule_extension_salesforce_api_search_SearchResult_SearchRecord_SearchSnippet_NameValuePair_9>, 
+  entityName?: String
+|} {"typeAlias": "LabelsSearchMetadata",
+"class": "org.mule.extension.salesforce.api.search.SearchResult\$SearchResultsMetadata\$LabelsSearchMetadata",
+"typeId": "org.mule.extension.salesforce.api.search.SearchResult.SearchResultsMetadata.LabelsSearchMetadata"}
+type org_mule_extension_salesforce_api_search_SearchResult_SearchRecord_SearchSnippet_NameValuePair_9 = {|
+  name?: String, 
+  value?: String
+|} {"typeAlias": "NameValuePair",
+"class": "org.mule.extension.salesforce.api.search.SearchResult\$SearchRecord\$SearchSnippet\$NameValuePair",
+"typeId": "org.mule.extension.salesforce.api.search.SearchResult.SearchRecord.SearchSnippet.NameValuePair"}
+
+
+
+
+
+
+

@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_e3b3fbe9_3e21_4c61_8725_9e0268aeab0b_Input_Variables_newPurchaseOpp = Any
+

@@ -1,0 +1,1460 @@
+[
+  {
+    "CB Country": "Australia",
+    "SFDC Country": "Australia",
+    "Is US State": "FALSE",
+    "Has States Available": "TRUE"
+  },
+  {
+    "CB Country": "Canada",
+    "SFDC Country": "Canada",
+    "Is US State": "FALSE",
+    "Has States Available": "TRUE"
+  },
+  {
+    "CB Country": "France",
+    "SFDC Country": "France",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Germany",
+    "SFDC Country": "Germany",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Netherlands",
+    "SFDC Country": "Netherlands",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Switzerland",
+    "SFDC Country": "Switzerland",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "United Kingdom",
+    "SFDC Country": "United Kingdom (GB)",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "United States",
+    "SFDC Country": "United States",
+    "Is US State": "FALSE",
+    "Has States Available": "TRUE"
+  },
+  {
+    "CB Country": "Afghanistan",
+    "SFDC Country": "Afghanistan",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Åland Islands",
+    "SFDC Country": "Aland Islands",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Albania",
+    "SFDC Country": "Albania",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Algeria",
+    "SFDC Country": "Algeria",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "American Samoa",
+    "SFDC Country": "American Samoa",
+    "Is US State": "FALSE",
+    "Has States Available": "FALSE"
+  },
+  {
+    "CB Country": "Andorra",
+    "SFDC Country": "Andorra",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Angola",
+    "SFDC Country": "Angola",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Anguilla",
+    "SFDC Country": "Anguilla",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Antarctica",
+    "SFDC Country": "Antarctica",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Antigua and Barbuda",
+    "SFDC Country": "Antigua and Barbuda",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Argentina",
+    "SFDC Country": "Argentina",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Armenia",
+    "SFDC Country": "Armenia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Aruba",
+    "SFDC Country": "Aruba",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Austria",
+    "SFDC Country": "Austria",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Azerbaijan",
+    "SFDC Country": "Azerbaijan",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Bahamas",
+    "SFDC Country": "Bahamas",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Bahrain",
+    "SFDC Country": "Bahrain",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Bangladesh",
+    "SFDC Country": "Bangladesh",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Barbados",
+    "SFDC Country": "Barbados",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Belarus",
+    "SFDC Country": "Belarus",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Belgium",
+    "SFDC Country": "Belgium",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Belize",
+    "SFDC Country": "Belize",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Benin",
+    "SFDC Country": "Benin",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Bermuda",
+    "SFDC Country": "Bermuda",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Bhutan",
+    "SFDC Country": "Bhutan",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Bolivia",
+    "SFDC Country": "Bolivia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Bonaire, Sint Eustatius and Saba",
+    "SFDC Country": "Bonaire, Saint Eustatius and Saba",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Bosnia and Herzegovina",
+    "SFDC Country": "Bosnia and Herzegovina",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Botswana",
+    "SFDC Country": "Botswana",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Bouvet Island",
+    "SFDC Country": "Bouvet Island",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Brazil",
+    "SFDC Country": "Brazil",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "British Indian Ocean Territory",
+    "SFDC Country": "British Indian Ocean Territory",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Brunei Darussalam",
+    "SFDC Country": "Brunei Darussalam",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Bulgaria",
+    "SFDC Country": "Bulgaria",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Burkina Faso",
+    "SFDC Country": "Burkina Faso",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Burundi",
+    "SFDC Country": "Burundi",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Cambodia",
+    "SFDC Country": "Cambodia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Cameroon",
+    "SFDC Country": "Cameroon",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Canary Islands",
+    "SFDC Country": "Canary Islands",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Cape Verde",
+    "SFDC Country": "Cape Verde",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Cayman Islands",
+    "SFDC Country": "Cayman Islands",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Central African Republic",
+    "SFDC Country": "Central African Republic",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Chad",
+    "SFDC Country": "Chad",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Channel Islands - Guernsey",
+    "SFDC Country": "Guernsey",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Channel Islands - Jersey",
+    "SFDC Country": "Jersey",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Chile",
+    "SFDC Country": "Chile",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "China",
+    "SFDC Country": "China",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Christmas Island",
+    "SFDC Country": "Christmas Island",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Cocos (Keeling) Islands",
+    "SFDC Country": "Cocos (Keeling) Islands",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Colombia",
+    "SFDC Country": "Colombia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Comoros",
+    "SFDC Country": "Comoros",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Congo",
+    "SFDC Country": "Congo, Democratic Republic of",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Cook Islands",
+    "SFDC Country": "Cook Islands",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Costa Rica",
+    "SFDC Country": "Costa Rica",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Croatia",
+    "SFDC Country": "Croatia/Hrvatska",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Curaçao",
+    "SFDC Country": "Curaçao",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Cyprus",
+    "SFDC Country": "Cyprus",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Czech Republic",
+    "SFDC Country": "Czech Republic",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Denmark",
+    "SFDC Country": "Denmark",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Djibouti",
+    "SFDC Country": "Djibouti",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Dominica",
+    "SFDC Country": "Dominica",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Dominican Republic",
+    "SFDC Country": "Dominican Republic",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Ecuador",
+    "SFDC Country": "Ecuador",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Egypt",
+    "SFDC Country": "Egypt",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "El Salvador",
+    "SFDC Country": "El Salvador",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Equatorial Guinea",
+    "SFDC Country": "Equatorial Guinea",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Eritrea",
+    "SFDC Country": "Eritrea",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Estonia",
+    "SFDC Country": "Estonia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Ethiopia",
+    "SFDC Country": "Ethiopia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Falkland Islands (Malvinas)",
+    "SFDC Country": "Falkland Islands",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Faroe Islands",
+    "SFDC Country": "Faroe Islands",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Fiji",
+    "SFDC Country": "Fiji",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Finland",
+    "SFDC Country": "Finland",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "French Guiana",
+    "SFDC Country": "French Guiana",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "French Polynesia",
+    "SFDC Country": "French Polynesia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "French Southern Territories",
+    "SFDC Country": "French Southern Territories",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Gabon",
+    "SFDC Country": "Gabon",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Gambia",
+    "SFDC Country": "Gambia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Georgia",
+    "SFDC Country": "Georgia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Ghana",
+    "SFDC Country": "Ghana",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Gibraltar",
+    "SFDC Country": "Gibraltar",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Greece",
+    "SFDC Country": "Greece",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Greenland",
+    "SFDC Country": "Greenland",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Grenada",
+    "SFDC Country": "Grenada",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Guadeloupe",
+    "SFDC Country": "Guadeloupe",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Guam",
+    "SFDC Country": "Guam",
+    "Is US State": "FALSE",
+    "Has States Available": "FALSE"
+  },
+  {
+    "CB Country": "Guatemala",
+    "SFDC Country": "Guatemala",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Guinea",
+    "SFDC Country": "Guinea",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Guinea-Bissau",
+    "SFDC Country": "Guinea-Bissau",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Guyana",
+    "SFDC Country": "Guyana",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Haiti",
+    "SFDC Country": "Haiti",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Heard Isl. and Mcdonald Isl.",
+    "SFDC Country": "Heard and McDonald Islands",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Holy See (Vatican City State)",
+    "SFDC Country": "Holy See (City Vatican State)",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Honduras",
+    "SFDC Country": "Honduras",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Hong Kong",
+    "SFDC Country": "Hong Kong",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Hungary",
+    "SFDC Country": "Hungary",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Iceland",
+    "SFDC Country": "Iceland",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "India",
+    "SFDC Country": "India",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Indonesia",
+    "SFDC Country": "Indonesia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Iraq",
+    "SFDC Country": "Iraq",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Ireland",
+    "SFDC Country": "Ireland",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Isle of Man",
+    "SFDC Country": "Isle of Man",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Israel",
+    "SFDC Country": "Israel",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Italy",
+    "SFDC Country": "Italy",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Jamaica",
+    "SFDC Country": "Jamaica",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Japan",
+    "SFDC Country": "Japan",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Jordan",
+    "SFDC Country": "Jordan",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Kazakhstan",
+    "SFDC Country": "Kazakhstan",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Kenya",
+    "SFDC Country": "Kenya",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Kiribati",
+    "SFDC Country": "Kiribati",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Korea, Republic of",
+    "SFDC Country": "Korea, Republic of",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Kuwait",
+    "SFDC Country": "Kuwait",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Kyrgyzstan",
+    "SFDC Country": "Kyrgyzstan",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Laos",
+    "SFDC Country": "Lao People's Democratic Republic",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Latvia",
+    "SFDC Country": "Latvia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Lebanon",
+    "SFDC Country": "Lebanon",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Lesotho",
+    "SFDC Country": "Lesotho",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Liberia",
+    "SFDC Country": "Liberia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Libya",
+    "SFDC Country": "Libyan Arab Jamahiriya",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Liechtenstein",
+    "SFDC Country": "Liechtenstein",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Lithuania",
+    "SFDC Country": "Lithuania",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Luxembourg",
+    "SFDC Country": "Luxemburg",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Macau",
+    "SFDC Country": "Macau",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Macedonia, Former Yugosl. Rep.",
+    "SFDC Country": "Macedonia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Madagascar",
+    "SFDC Country": "Madagascar",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Malawi",
+    "SFDC Country": "Malawi",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Malaysia",
+    "SFDC Country": "Malaysia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Maldives",
+    "SFDC Country": "Maldives",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Mali",
+    "SFDC Country": "Mali",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Malta",
+    "SFDC Country": "Malta",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Marshall Islands",
+    "SFDC Country": "United States",
+    "Is US State": "TRUE",
+    "Has States Available": "TRUE"
+  },
+  {
+    "CB Country": "Martinique",
+    "SFDC Country": "Martinique",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Mauritania",
+    "SFDC Country": "Mauritania",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Mauritius",
+    "SFDC Country": "Mauritius",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Mayotte",
+    "SFDC Country": "Mayotte",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Mexico",
+    "SFDC Country": "Mexico",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Micronesia, Federated States of",
+    "SFDC Country": "Micronesia, Federal States of",
+    "Is US State": "FALSE",
+    "Has States Available": "FALSE"
+  },
+  {
+    "CB Country": "Moldova, Republic of",
+    "SFDC Country": "Moldova, Republic of",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Monaco",
+    "SFDC Country": "Monaco",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Mongolia",
+    "SFDC Country": "Mongolia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Montenegro",
+    "SFDC Country": "Montenegro",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Montserrat",
+    "SFDC Country": "Montserrat",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Morocco",
+    "SFDC Country": "Morocco",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Mozambique",
+    "SFDC Country": "Mozambique",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Namibia",
+    "SFDC Country": "Namibia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Nauru",
+    "SFDC Country": "Nauru",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Nepal",
+    "SFDC Country": "Nepal",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "New Caledonia",
+    "SFDC Country": "New Caledonia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "New Zealand",
+    "SFDC Country": "New Zealand",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Nicaragua",
+    "SFDC Country": "Nicaragua",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Niger",
+    "SFDC Country": "Niger",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Nigeria",
+    "SFDC Country": "Nigeria",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Niue",
+    "SFDC Country": "Niue",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Norfolk Island",
+    "SFDC Country": "Norfolk Island",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Northern Mariana Islands",
+    "SFDC Country": "Northern Mariana Islands",
+    "Is US State": "FALSE",
+    "Has States Available": "FALSE"
+  },
+  {
+    "CB Country": "Norway",
+    "SFDC Country": "Norway",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Oman",
+    "SFDC Country": "Oman",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Pakistan",
+    "SFDC Country": "Pakistan",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Palau",
+    "SFDC Country": "Palau",
+    "Is US State": "FALSE",
+    "Has States Available": "FALSE"
+  },
+  {
+    "CB Country": "Palestinian Territory, Occupied",
+    "SFDC Country": "Palestinian territories",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Panama",
+    "SFDC Country": "Panama",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Papua New Guinea",
+    "SFDC Country": "Papua New Guinea",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Paraguay",
+    "SFDC Country": "Paraguay",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Peru",
+    "SFDC Country": "Peru",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Philippines",
+    "SFDC Country": "Philippines",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Pitcairn",
+    "SFDC Country": "Pitcairn Island",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Poland",
+    "SFDC Country": "Poland",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Portugal",
+    "SFDC Country": "Portugal",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Puerto Rico",
+    "SFDC Country": "Puerto Rico",
+    "Is US State": "FALSE",
+    "Has States Available": "FALSE"
+  },
+  {
+    "CB Country": "Qatar",
+    "SFDC Country": "Qatar",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Réunion",
+    "SFDC Country": "Reunion Island",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Romania",
+    "SFDC Country": "Romania",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Russian Federation",
+    "SFDC Country": "Russian Federation",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Rwanda",
+    "SFDC Country": "Rwanda",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "S. Georgia and S. Sandwich Isl.",
+    "SFDC Country": "South Georgia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Saint Barthélemy",
+    "SFDC Country": "Saint Barthélemy",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Saint Helena",
+    "SFDC Country": "Saint Helena",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Saint Kitts and Nevis",
+    "SFDC Country": "Saint Kitts and Nevis",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Saint Lucia",
+    "SFDC Country": "Saint Lucia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Saint Martin (French part)",
+    "SFDC Country": "Saint Martin (French part)",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Saint Pierre and Miquelon",
+    "SFDC Country": "St. Pierre and Miquelon",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Samoa",
+    "SFDC Country": "Samoa",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "San Marino",
+    "SFDC Country": "San Marino",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Sao Tome and Principe",
+    "SFDC Country": "Sao Tome and Principe",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Saudi Arabia",
+    "SFDC Country": "Saudi Arabia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Senegal",
+    "SFDC Country": "Senegal",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Serbia",
+    "SFDC Country": "Serbia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Seychelles",
+    "SFDC Country": "Seychelles",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Sierra Leone",
+    "SFDC Country": "Sierra Leone",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Singapore",
+    "SFDC Country": "Singapore",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Sint Maarten",
+    "SFDC Country": "Sint Maarten (Dutch part)",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Slovakia",
+    "SFDC Country": "Slovakia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Slovenia",
+    "SFDC Country": "Slovenia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Solomon Islands",
+    "SFDC Country": "Solomon Islands",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "South Africa",
+    "SFDC Country": "South Africa",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "South Sudan",
+    "SFDC Country": "South Sudan",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Spain",
+    "SFDC Country": "Spain",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Sri Lanka",
+    "SFDC Country": "Sri Lanka",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "St. Vincent and the Grenadines",
+    "SFDC Country": "Saint Vincent and the Grenadines",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Suriname",
+    "SFDC Country": "Suriname",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Svalbard and Jan Mayen",
+    "SFDC Country": "Svalbard and Jan MayenSvalbard and Jan Mayen Islands",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Swaziland",
+    "SFDC Country": "Swaziland",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Sweden",
+    "SFDC Country": "Sweden",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Taiwan",
+    "SFDC Country": "Taiwan",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Tajikistan",
+    "SFDC Country": "Tajikistan",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Tanzania, United Republic of",
+    "SFDC Country": "Tanzania",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Thailand",
+    "SFDC Country": "Thailand",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Timor-Leste",
+    "SFDC Country": "Timor-Leste",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Togo",
+    "SFDC Country": "Togo",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Tokelau",
+    "SFDC Country": "Tokelau",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Tonga",
+    "SFDC Country": "Tonga",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Trinidad and Tobago",
+    "SFDC Country": "Trinidad and Tobago",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Tunisia",
+    "SFDC Country": "Tunisia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Turkey",
+    "SFDC Country": "Turkey",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Turkmenistan",
+    "SFDC Country": "Turkmenistan",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Turks and Caicos Islands",
+    "SFDC Country": "Turks and Caicos Islands",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Tuvalu",
+    "SFDC Country": "Tuvalu",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "U. S. Minor Outlying Islands",
+    "SFDC Country": "US Minor Outlying Islands",
+    "Is US State": "FALSE",
+    "Has States Available": "FALSE"
+  },
+  {
+    "CB Country": "Uganda",
+    "SFDC Country": "Uganda",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Ukraine",
+    "SFDC Country": "Ukraine",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "United Arab Emirates",
+    "SFDC Country": "United Arab Emirates",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Uruguay",
+    "SFDC Country": "Uruguay",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Uzbekistan",
+    "SFDC Country": "Uzbekistan",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Vanuatu",
+    "SFDC Country": "Vanuatu",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Venezuela",
+    "SFDC Country": "Venezuela",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Vietnam",
+    "SFDC Country": "Vietnam",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Virgin Islands, British",
+    "SFDC Country": "Virgin Islands (British)",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Virgin Islands, U.S.",
+    "SFDC Country": "Virgin Islands (USA)",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Wallis and Futuna",
+    "SFDC Country": "Wallis and Futuna",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Western Sahara",
+    "SFDC Country": "Western Sahara",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Yemen",
+    "SFDC Country": "Yemen",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Zambia",
+    "SFDC Country": "Zambia",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "Zimbabwe",
+    "SFDC Country": "Zimbabwe",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  },
+  {
+    "CB Country": "United States of America",
+    "SFDC Country": "United States",
+    "Is US State": "FALSE",
+    "Has States Available": "TRUE"
+  },
+  {
+    "CB Country": "Côte D'Ivoire",
+    "SFDC Country": "Cote d'Ivoire",
+    "Is US State": "FALSE",
+    "Has States Available": ""
+  }
+]

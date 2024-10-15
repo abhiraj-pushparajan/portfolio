@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_3d90fb5d_aa18_4c0f_a8d3_79785b03618b_Input_Variables_currencyCode = Null | String
+

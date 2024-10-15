@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd  http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+    <flow name="nt-cb-perpetual-sfdc-papi-main">
+        <http:listener config-ref="nt-cb-perpetual-sfdc-papi-httpListenerConfig" path="${http.path}" doc:name="HTTPS Listener-nt-cb-perpetual-sfdc-papi">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="nt-cb-perpetual-sfdc-papi-config" doc:name="APIkit Router - nt-cb-perpetual-sfdc-papi" />
+		<error-handler ref="global-error-handler" />
+    </flow>
+    <flow name="reprocess-notification-subflow" doc:id="7dc59b33-ffa0-4fe0-97dd-ea3a154826e1">
+		<scheduler doc:name="Scheduler" doc:id="94097503-f7d6-48be-a8c1-535e253e47ff">
+            <scheduling-strategy>
+                <fixed-frequency startDelay="1000" timeUnit="DAYS" />
+            </scheduling-strategy>
+        </scheduler>
+		<logger level="INFO" doc:name="Logger-reprocessing-start" doc:id="f544e4a1-ce7a-48fb-acf3-f5b916c6e74d" message='#[output application/json&#10;---&#10;{&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "reprocessing flow has started"&#10;}]'/>
+		<os:retrieve-all doc:name="Retrieve-payload-for-reprocessing" doc:id="bf9775bb-898b-4cb5-8835-f0dae76dd68d" objectStore="Object_store" />
+        <os:clear doc:name="Clear-OS" doc:id="a104686d-1c9f-4ed8-86af-c24d3dd04024" objectStore="Object_store" />
+        <ee:transform doc:name="convert-payload-to-json" doc:id="263f1693-ddc7-4dd1-bb85-d51b82b94f94">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var data= payload..
+---
+data map()-> read($,"application/json")]]></ee:set-payload>
+            </ee:message>
+            <ee:variables>
+                <ee:set-variable variableName="reprocessing"><![CDATA[%dw 2.0
+output application/java
+---
+true]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <foreach doc:name="For Each" doc:id="eecd1d50-6575-4f98-b0b4-218868e237cc">
+            <logger level="INFO" doc:name="Logger-failed-payload" doc:id="ae38ce58-f1ed-46a7-b1fb-4716cf46d544" />
+			<try doc:name="Try" doc:id="45da50f1-8b10-4569-a8f9-0e48351c2004" >
+				<flow-ref doc:name="Flow Reference-check-lead-contact-flow" doc:id="3ecd66c3-1c5a-4493-b80b-a27547ecfa94" name="check-lead-contact-flow" />
+				<error-handler ref="global-error-handler" />
+			</try>
+        </foreach>
+        <logger level="INFO" doc:name="Logger-end-of-reprocessing" doc:id="1d446292-d7ac-448e-8375-5ef66ef54058" message='#[output application/json&#10;---&#10;{&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "reprocessing flow has ended"&#10;}]' />
+		<error-handler ref="global-error-handler" />
+    </flow>
+    <flow name="clear-reprocess-notification" doc:id="b33a5c0f-ff4c-4b92-ab49-0028dd73a3c6">
+        <scheduler doc:name="Scheduler" doc:id="8abad3fb-7546-4ee1-bb25-f466321795a5">
+            <scheduling-strategy>
+                <fixed-frequency startDelay="1000" timeUnit="DAYS" />
+            </scheduling-strategy>
+        </scheduler>
+		<os:retrieve-all doc:name="Retrieve Reprocessing OS" doc:id="0adcddb7-89ad-4d12-902f-fe2e4353b83d" objectStore="Object_store"/>
+		<logger level="INFO" doc:name="Logger-clear-payload" doc:id="4ceec209-ea79-4965-9c09-c99e355c2b79" message='#[output application/json&#10;---&#10;{&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now() >>"EST",&#10; "logLevel": "Info",&#10; "message": "clearing OS",&#10; "payload": payload&#10;}]'/>
+		<os:clear doc:name="Clear Reprocessing OS" doc:id="e64f8cbf-8e15-4015-a7c4-9bbae824223d" objectStore="Object_store" />
+		<error-handler ref="global-error-handler" />
+    </flow>
+    <flow name="post:\purchase:application\json:nt-cb-perpetual-sfdc-papi-config">
+        <logger level="INFO" doc:name="Info Logger" doc:id="456fe07a-03d2-4f40-aeec-98234dcf2a9d"/>
+		<ee:transform doc:name="initialise-variable" doc:id="1d4d88c2-a951-4b83-afee-d1800dd34df0">
+            <ee:message />
+            <ee:variables>
+                <ee:set-variable variableName="reprocessing"><![CDATA[%dw 2.0
+output application/java
+---
+false]]></ee:set-variable>
+                <ee:set-variable variableName="processed"><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "processed":[]
+}]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		<flow-ref doc:name="Flow Reference-cb-to-sf-main-flow" doc:id="ffc3d841-5a01-4867-9558-b26d3d4e1643" name="cb-to-sf-main-flow" />
+        <ee:transform doc:name="Endpoint Response">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"PurchaseId": vars.realPayload.purchaseId,
+	"CorrelationId": correlationId,
+	"Status": "Success",
+	"Type": vars.realPayload.status default "Invalid payload",
+	"Timestamp": now()>>"EST",
+	"Reprocessing": vars.reprocessing default false
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <os:store doc:name="store-report-data" doc:id="229d429b-560e-437c-927b-13c6ee2d404c" key='#[correlationId]' objectStore="create-report"/>
+		<logger level="INFO" doc:name="End Logger" doc:id="d005a1a6-1deb-496f-ae95-1b13bcf4798f" message='#[output application/json&#10;---&#10;{&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now() &gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "End of cleverbridge-sfdc integration",&#10; "processed": vars.processed&#10;}]'/>
+    </flow>
+    <flow name="generate-report" doc:id="3d67b3f5-2757-4f6e-beac-716412a313a1" >
+		
+		<scheduler doc:name="Scheduler" doc:id="959a463e-6b53-49e1-8d23-34c0bc7a5346" >
+			<scheduling-strategy >
+				<cron expression="${cron}" />
+			</scheduling-strategy>
+		</scheduler>
+		<os:retrieve-all doc:name="Retrieve daily report data" doc:id="1f10396a-e5fe-48c2-abd2-37dc81d92e20" objectStore="create-report"/>
+		<os:clear doc:name="Clear OS for daily report" doc:id="ac20255c-f5b3-4f83-bf21-b00d78c71d1a" objectStore="create-report"/>
+		<ee:transform doc:name="parse-payload" doc:id="4d993420-b594-4a51-bcb2-68c068d5e886" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv
+var data= payload..
+---
+data map()-> read($,"application/json")]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="filter invalid payloads" doc:id="476c05dc-f734-49a5-8bf7-95102badec73" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv
+---
+payload filter(!isEmpty($.PurchaseId))]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="send-email-report" doc:id="5ec2d30e-96cc-4877-aeb1-899d710ff73e" config-ref="HTTP_Request_configuration_sendMail" path="${sendMail.path}" responseTimeout="60000">
+				<http:body ><![CDATA[#[output application/json
+import * from dw::core::Binaries
+---
+{
+    "api_key": p('secure::sendMail.apiKey'),
+    "to": p('sendMail.receipients') splitBy ",",
+    "sender": "MuleSoft <mulesoft@gonitro.com>",
+    "subject": "Daily Report Count for Cleverbridge Perpetual to Salesforce integration for $((now()-|P1D|) as String { format: "d MMMM YYYY"}) :: " ++ p('mule.env'),
+    "html_body": "<p>Hi team,<br>Please find the attachment which contains the report of processed records in perpetual with it's status.</p>",
+    ("attachments": [
+        {
+            "filename": "perpetual-processed-records-$(now()>>"EST").csv",
+            "fileblob": toBase64(write(payload, "applicaton/csv")),
+            "mimetype": "application/csv"
+        }
+    ]) if(payload != null)
+}]]]></http:body>
+			</http:request>
+		<logger level="INFO" doc:name="end-logger" doc:id="735ca56e-6d9f-45d6-8e46-a8ae5fcdee1a" message='#[output application/json&#10;---&#10;{&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now() &gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Perpetual processed reports has been send."&#10;}]'/>
+	</flow>
+	<flow name="get:\health:nt-cb-perpetual-sfdc-papi-config">
+        <flow-ref doc:name="Flow Reference-health-check-flow" doc:id="fd0cbaef-f7ff-4ec8-855b-c90a1eaf5a6e" name="health-check-flow" />
+    </flow>
+</mule>

@@ -1,0 +1,20 @@
+salesforce:
+  api: ""
+  soql: ""
+  pool:
+    objectTtl: "300000" # Milliseconds
+    maxEntries: "10"
+  reconnection:
+    frequency: "3000" # Milliseconds
+    attempts: "5"
+  query:
+    contact: "SELECT Id, Email, AccountId, OwnerId, LastModifiedDate FROM Contact WHERE Email = ':Email'"
+    lead: "SELECT Id, Email, Converted__c, OwnerId, Matched_Account_ID__c FROM Lead WHERE Email = ':Email' AND Converted__c = 0"
+    account: "SELECT Id FROM Account WHERE Name = ':accountName' AND BillingPostalCode = ':postalCode'"
+
+http:
+  host: '0.0.0.0'
+  port: '8081'
+  path: '/api/*'
+  readTimeout: '30000'
+cron: '0 0 4 1/1 * ? *'

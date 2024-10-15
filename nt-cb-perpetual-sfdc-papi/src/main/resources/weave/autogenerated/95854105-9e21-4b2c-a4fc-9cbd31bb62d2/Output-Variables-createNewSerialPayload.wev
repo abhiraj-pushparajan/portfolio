@@ -1,0 +1,11 @@
+%dw 2.0
+
+type auto_95854105_9e21_4b2c_a4fc_9cbd31bb62d2_Output_Variables_createNewSerialPayload = Array<{|  Serial_Number__c: Null,   CurrencyIsoCode: Null | String,   Asset__c: Array<java_lang_Object> | Null, 
+  Is_Active__c: Boolean
+|}>
+type java_lang_Object = {|  |} {"typeAlias": "Object",
+"class": "java.lang.Object",
+"typeId": "java.lang.Object"}
+
+
+

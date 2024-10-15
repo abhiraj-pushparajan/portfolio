@@ -1,0 +1,148 @@
+%dw 2.0
+
+type auto_95854105_9e21_4b2c_a4fc_9cbd31bb62d2_Output_Variables_rootMessage = {|
+  payload: {|
+    meta?: {|
+      "type"?: String, 
+      date?: String, 
+      schemaUrl?: String
+    |}, 
+    purchaseId?: Number {"typeId": "int"}, 
+    configurationClientId?: Number {"typeId": "int"}, 
+    status?: String, 
+    statusId?: String, 
+    billingContact?: {|
+      language?: String, 
+      languageId?: String, 
+      locale?: String, 
+      company?: String, 
+      firstname?: String, 
+      lastname?: String, 
+      companyRomanized?: String, 
+      firstnameRomanized?: String, 
+      lastnameRomanized?: String, 
+      postalcode?: String, 
+      country?: String, 
+      countryId?: String, 
+      email?: String
+    |}, 
+    deliveryContact?: {|
+      language?: String, 
+      languageId?: String, 
+      locale?: String, 
+      company?: String, 
+      firstname?: String, 
+      lastname?: String, 
+      companyRomanized?: String, 
+      firstnameRomanized?: String, 
+      lastnameRomanized?: String, 
+      postalcode?: String, 
+      country?: String, 
+      countryId?: String, 
+      email?: String
+    |}, 
+    licenseeContact?: {|
+      language?: String, 
+      languageId?: String, 
+      locale?: String, 
+      company?: String, 
+      firstname?: String, 
+      lastname?: String, 
+      companyRomanized?: String, 
+      firstnameRomanized?: String, 
+      lastnameRomanized?: String, 
+      postalcode?: String, 
+      country?: String, 
+      countryId?: String, 
+      email?: String
+    |}, 
+    paymentInfo?: {|
+      currency?: String, 
+      currencyId?: String, 
+      paymentType?: String, 
+      paymentTypeId?: String, 
+      isPurchaseOrder?: Boolean
+    |}, 
+    creationTime?: String, 
+    paymentArriveTime?: String, 
+    lastModificationTime?: String, 
+    subscriptionRevenueCategoryId?: String, 
+    remoteAddress?: String, 
+    httpUserAgent?: String, 
+    httpEntryUrl?: String, 
+    httpReferer?: String, 
+    httpAcceptLanguage?: String, 
+    internalCustomer?: String, 
+    customerConfirmationPageUrl?: String, 
+    customerPdfDocumentUrl?: String, 
+    merchantOfRecord?: String, 
+    items?: Array<{|      runningNumber?: Number {"typeId": "int"},       productId?: Number {"typeId": "int"},       productName?: String,       productNameExtension?: String,       yourProductId?: String,       yourProductName?: String,       productReportingGroup?: String,       internalCategory?: String,       supportContactId?: Number {"typeId": "int"},       supportContact?: String,       clientId?: Number {"typeId": "int"},       quantity?: Number {"typeId": "int"},       couponcode?: String,       promotionId?: Number {"typeId": "int"},       promotionName?: String,       yourCurrency?: String,       yourCurrencyId?: String,       profitCalculation?: {|        grossRevenue?: Number {"typeId": "int"},         collectedVat?: Number {"typeId": "int"},         netRevenue?: Number {"typeId": "int"},         cbMarginPercentage?: Number {"typeId": "int"},         cbMarginFix?: Number {"typeId": "int"},         yourNetProfit?: Number {"typeId": "int"},         yourVat?: Number {"typeId": "int"},         yourGrossProfit?: Number {"typeId": "int"}      |},       yourPrice?: {|        productSinglePrice?: {|          netPrice?: Number {"typeId": "double"},           vatPrice?: Number {"typeId": "int"},           grossPrice?: Number {"typeId": "double"},           vatPercentage?: Number {"typeId": "int"}        |},         productTotalPrice?: {|          netPrice?: Number {"typeId": "double"},           vatPrice?: Number {"typeId": "int"},           grossPrice?: Number {"typeId": "double"},           vatPercentage?: Number {"typeId": "int"}        |},         promotionDiscountSinglePrice?: {|          netPrice?: Number {"typeId": "double"},           vatPrice?: Number {"typeId": "int"},           grossPrice?: Number {"typeId": "double"},           vatPercentage?: Number {"typeId": "int"}        |},         promotionDiscountTotalPrice?: {|          netPrice?: Number {"typeId": "double"},           vatPrice?: Number {"typeId": "int"},           grossPrice?: Number {"typeId": "double"},           vatPercentage?: Number {"typeId": "int"}        |},         totalSinglePrice?: {|          netPrice?: Number {"typeId": "int"},           vatPrice?: Number {"typeId": "int"},           grossPrice?: Number {"typeId": "int"},           vatPercentage?: Number {"typeId": "int"}        |},         totalTotalPrice?: {|          netPrice?: Number {"typeId": "int"},           vatPrice?: Number {"typeId": "int"},           grossPrice?: Number {"typeId": "int"},           vatPercentage?: Number {"typeId": "int"}        |}      |},       customerPrice?: {|        productSinglePrice?: {|          netPrice?: Number {"typeId": "double"},           vatPrice?: Number {"typeId": "double"},           grossPrice?: Number {"typeId": "double"},           vatPercentage?: Number {"typeId": "int"}        |},         productTotalPrice?: {|          netPrice?: Number {"typeId": "double"},           vatPrice?: Number {"typeId": "double"},           grossPrice?: Number {"typeId": "double"},           vatPercentage?: Number {"typeId": "int"}        |},         promotionDiscountSinglePrice?: {|          netPrice?: Number {"typeId": "double"},           vatPrice?: Number {"typeId": "double"},           grossPrice?: Number {"typeId": "double"},           vatPercentage?: Number {"typeId": "int"}        |},         promotionDiscountTotalPrice?: {|          netPrice?: Number {"typeId": "double"},           vatPrice?: Number {"typeId": "double"},           grossPrice?: Number {"typeId": "double"},           vatPercentage?: Number {"typeId": "int"}        |},         totalSinglePrice?: {|          netPrice?: Number {"typeId": "int"},           vatPrice?: Number {"typeId": "int"},           grossPrice?: Number {"typeId": "int"},           vatPercentage?: Number {"typeId": "int"}        |},         totalTotalPrice?: {|          netPrice?: Number {"typeId": "int"},           vatPrice?: Number {"typeId": "int"},           grossPrice?: Number {"typeId": "int"},           vatPercentage?: Number {"typeId": "int"}        |}      |},       deliveries?: Array<{|        key?: {|          key?: String,           keyRaw?: String,           deliveryType?: String,           deliveryTypeId?: String        |}      |}>, 
+      recurringBilling?: {|
+        subscriptionId?: String, 
+        subscriptionItemRunningNo?: Number {"typeId": "int"}, 
+        subscriptionEventtypeId?: String, 
+        originalPurchaseId?: Number {"typeId": "int"}, 
+        originalPurchaseItemRunningNumber?: Number {"typeId": "int"}, 
+        intervalNumber?: Number {"typeId": "int"}, 
+        subscriptionIntervalNumber?: Number {"typeId": "int"}, 
+        intervalLengthInDays?: Number {"typeId": "int"}, 
+        intervalLengthInMonths?: Number {"typeId": "int"}, 
+        gracePeriodDays?: Number {"typeId": "int"}, 
+        statusId?: String, 
+        status?: String, 
+        itemStatusId?: String, 
+        itemStatus?: String, 
+        nextBillingDate?: String, 
+        cancellationUrl?: String, 
+        changePaymentSubscriptionUrl?: String, 
+        nextBillingProfit?: {|
+          grossRevenue?: Number {"typeId": "double"}, 
+          collectedVat?: Number {"typeId": "double"}, 
+          netRevenue?: Number {"typeId": "double"}, 
+          cbMarginPercentage?: Number {"typeId": "int"}, 
+          cbMarginFix?: Number {"typeId": "int"}, 
+          yourNetProfit?: Number {"typeId": "double"}, 
+          yourVat?: Number {"typeId": "int"}, 
+          yourGrossProfit?: Number {"typeId": "double"}
+        |}, 
+        renewalType?: String, 
+        subscriptionManagementModel?: String
+      |}, 
+      licensePeriodInMonths?: Number {"typeId": "int"}, 
+      yourCurrentProductId?: String
+    |}>, 
+    extraParameters?: {|
+      "x-iscompany"?: String, 
+      "x-lae_vid"?: String, 
+      "x-ml_eg"?: String, 
+      "x-r-source"?: String, 
+      "x-source"?: String, 
+      "x-volumediscount"?: String, 
+      "x-wdl_delay"?: String
+    |}
+  |} {"example": "{\\\"meta\\\":{\\\"type\\\":\\\"PaidOrderNotification\\\",\\\"date\\\":\\\"2024-03-13T10:17:54.437228-07:00\\\",\\\"schemaUrl\\\":\\\"https:\\/\\/www.cleverbridge.com\\/JsonNotificationSchemas\\/PaidOrderNotification\\\"},\\\"purchaseId\\\":452218901,\\\"configurationClientId\\\":304,\\\"status\\\":\\\"Paid\\\",\\\"statusId\\\":\\\"PAY\\\",\\\"billingContact\\\":{\\\"language\\\":\\\"English\\\",\\\"languageId\\\":\\\"en\\\",\\\"locale\\\":\\\"en-US\\\",\\\"company\\\":\\\"Daniel Vallat\\\",\\\"firstname\\\":\\\"Daniel\\\",\\\"lastname\\\":\\\"Vallat\\\",\\\"companyRomanized\\\":\\\"Daniel Vallat\\\",\\\"firstnameRomanized\\\":\\\"Daniel\\\",\\\"lastnameRomanized\\\":\\\"Vallat\\\",\\\"postalcode\\\":\\\"22560\\\",\\\"country\\\":\\\"France\\\",\\\"countryId\\\":\\\"FR\\\",\\\"email\\\":\\\"vallat.daniel@gmail.com\\\"},\\\"deliveryContact\\\":{\\\"language\\\":\\\"English\\\",\\\"languageId\\\":\\\"en\\\",\\\"locale\\\":\\\"en-US\\\",\\\"company\\\":\\\"Daniel Vallat\\\",\\\"firstname\\\":\\\"Daniel\\\",\\\"lastname\\\":\\\"Vallat\\\",\\\"companyRomanized\\\":\\\"Daniel Vallat\\\",\\\"firstnameRomanized\\\":\\\"Daniel\\\",\\\"lastnameRomanized\\\":\\\"Vallat\\\",\\\"postalcode\\\":\\\"22560\\\",\\\"country\\\":\\\"France\\\",\\\"countryId\\\":\\\"FR\\\",\\\"email\\\":\\\"vallat.daniel@gmail.com\\\"},\\\"licenseeContact\\\":{\\\"language\\\":\\\"English\\\",\\\"languageId\\\":\\\"en\\\",\\\"locale\\\":\\\"en-US\\\",\\\"company\\\":\\\"Daniel Vallat\\\",\\\"firstname\\\":\\\"Daniel\\\",\\\"lastname\\\":\\\"Vallat\\\",\\\"companyRomanized\\\":\\\"Daniel Vallat\\\",\\\"firstnameRomanized\\\":\\\"Daniel\\\",\\\"lastnameRomanized\\\":\\\"Vallat\\\",\\\"postalcode\\\":\\\"22560\\\",\\\"country\\\":\\\"France\\\",\\\"countryId\\\":\\\"FR\\\",\\\"email\\\":\\\"vallat.daniel@gmail.com\\\"},\\\"paymentInfo\\\":{\\\"currency\\\":\\\"Euro\\\",\\\"currencyId\\\":\\\"EUR\\\",\\\"paymentType\\\":\\\"PayPal billing agreement\\\",\\\"paymentTypeId\\\":\\\"PPA_PCA\\\",\\\"isPurchaseOrder\\\":false},\\\"creationTime\\\":\\\"2024-03-13T10:17:01.372654\\\",\\\"paymentArriveTime\\\":\\\"2024-03-13T10:17:54.437228\\\",\\\"lastModificationTime\\\":\\\"2024-03-13T10:17:54.63808\\\",\\\"subscriptionRevenueCategoryId\\\":\\\"Signup\\\",\\\"remoteAddress\\\":\\\"81.53.26.0\\\",\\\"httpUserAgent\\\":\\\"Mozilla\\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\\/537.36 (KHTML, like Gecko) Chrome\\/122.0.0.0 Safari\\/537.36 Edg\\/122.0.0.0\\\",\\\"httpEntryUrl\\\":\\\"https:\\/\\/store.gonitro.com\\/304\\/purl-nitroemail?coupon=newfreesubs&x-source=perpout_segment1&x-r-source=email-1&mkt_tok=NDE2LUxEWC0yODYAAAGRrOwN_YaaQ003BxhtDJYJDwSZ1IUGxfyIe5uSJLuK-MtAsfvhuMPpyaYYB24nsm34wJ2TbdzTCQdBvK8D994cuOItG1RqyrzBAzvpeAXLHPPOdvQ\\\",\\\"httpReferer\\\":\\\"https:\\/\\/connect.gonitro.com\\/\\\",\\\"httpAcceptLanguage\\\":\\\"en-GB,en;q=0.9,en-US;q=0.8,fr-FR;q=0.7,fr;q=0.6\\\",\\\"internalCustomer\\\":\\\"623821751589759686\\\",\\\"customerConfirmationPageUrl\\\":\\\"https:\\/\\/store.gonitro.com\\/304\\/p\\/452218901?s=1710325081&e=1712917081&c=2D558E465551AE06E242A2D729C70476026B94FF\\\",\\\"customerPdfDocumentUrl\\\":\\\"https:\\/\\/store.gonitro.com\\/invoice\\/452218901.pdf?s=1710325081&e=1712917081&c=2D558E465551AE06E242A2D729C70476026B94FF&documentid=247330356\\\",\\\"merchantOfRecord\\\":\\\"AG\\\",\\\"items\\\":[{\\\"runningNumber\\\":1,\\\"productId\\\":252887,\\\"productName\\\":\\\"Nitro Pro\\\",\\\"productNameExtension\\\":\\\"Your Nitro subscription includes PDF Editing (Windows, Mac, iOS), unlimited eSigning, and Customer Support.\\\",\\\"yourProductId\\\":\\\"nitro-pro\\\",\\\"yourProductName\\\":\\\"Nitro Pro\\\",\\\"productReportingGroup\\\":\\\"Nitro Bundle Subscription\\\",\\\"internalCategory\\\":\\\"Subscription\\\",\\\"supportContactId\\\":3671,\\\"supportContact\\\":\\\"Nitro Support - Subscription\\\",\\\"clientId\\\":304,\\\"quantity\\\":1,\\\"couponcode\\\":\\\"newfreesubs\\\",\\\"promotionId\\\":156317,\\\"promotionName\\\":\\\"Ecomm. Outdated Perp. Customers FREE\\\",\\\"yourCurrency\\\":\\\"Euro\\\",\\\"yourCurrencyId\\\":\\\"EUR\\\",\\\"profitCalculation\\\":{\\\"grossRevenue\\\":0,\\\"collectedVat\\\":0,\\\"netRevenue\\\":0,\\\"cbMarginPercentage\\\":0,\\\"cbMarginFix\\\":0,\\\"yourNetProfit\\\":0,\\\"yourVat\\\":0,\\\"yourGrossProfit\\\":0},\\\"yourPrice\\\":{\\\"productSinglePrice\\\":{\\\"netPrice\\\":167.88,\\\"vatPrice\\\":0,\\\"grossPrice\\\":167.88,\\\"vatPercentage\\\":0},\\\"productTotalPrice\\\":{\\\"netPrice\\\":167.88,\\\"vatPrice\\\":0,\\\"grossPrice\\\":167.88,\\\"vatPercentage\\\":0},\\\"promotionDiscountSinglePrice\\\":{\\\"netPrice\\\":-167.88,\\\"vatPrice\\\":0,\\\"grossPrice\\\":-167.88,\\\"vatPercentage\\\":0},\\\"promotionDiscountTotalPrice\\\":{\\\"netPrice\\\":-167.88,\\\"vatPrice\\\":0,\\\"grossPrice\\\":-167.88,\\\"vatPercentage\\\":0},\\\"totalSinglePrice\\\":{\\\"netPrice\\\":0,\\\"vatPrice\\\":0,\\\"grossPrice\\\":0,\\\"vatPercentage\\\":0},\\\"totalTotalPrice\\\":{\\\"netPrice\\\":0,\\\"vatPrice\\\":0,\\\"grossPrice\\\":0,\\\"vatPercentage\\\":0}},\\\"customerPrice\\\":{\\\"productSinglePrice\\\":{\\\"netPrice\\\":167.88,\\\"vatPrice\\\":33.58,\\\"grossPrice\\\":201.46,\\\"vatPercentage\\\":20},\\\"productTotalPrice\\\":{\\\"netPrice\\\":167.88,\\\"vatPrice\\\":33.58,\\\"grossPrice\\\":201.46,\\\"vatPercentage\\\":20},\\\"promotionDiscountSinglePrice\\\":{\\\"netPrice\\\":-167.88,\\\"vatPrice\\\":-33.58,\\\"grossPrice\\\":-201.46,\\\"vatPercentage\\\":20},\\\"promotionDiscountTotalPrice\\\":{\\\"netPrice\\\":-167.88,\\\"vatPrice\\\":-33.58,\\\"grossPrice\\\":-201.46,\\\"vatPercentage\\\":20},\\\"totalSinglePrice\\\":{\\\"netPrice\\\":0,\\\"vatPrice\\\":0,\\\"grossPrice\\\":0,\\\"vatPercentage\\\":20},\\\"totalTotalPrice\\\":{\\\"netPrice\\\":0,\\\"vatPrice\\\":0,\\\"grossPrice\\\":0,\\\"vatPercentage\\\":20}},\\\"deliveries\\\":[{\\\"key\\\":{\\\"key\\\":\\\"<div style=\\\\\\\"display:none;\\\\\\\">OK <\\/Key><\\/div> \\\",\\\"keyRaw\\\":\\\"OK\\\",\\\"deliveryType\\\":\\\"Cleverbridge delivers key\\\",\\\"deliveryTypeId\\\":\\\"cleverbridgeDeliversKey\\\"}}],\\\"recurringBilling\\\":{\\\"subscriptionId\\\":\\\"S56670560\\\",\\\"subscriptionItemRunningNo\\\":1,\\\"subscriptionEventtypeId\\\":\\\"new\\\",\\\"originalPurchaseId\\\":452218901,\\\"originalPurchaseItemRunningNumber\\\":1,\\\"intervalNumber\\\":0,\\\"subscriptionIntervalNumber\\\":0,\\\"intervalLengthInDays\\\":0,\\\"intervalLengthInMonths\\\":12,\\\"gracePeriodDays\\\":0,\\\"statusId\\\":\\\"ACT\\\",\\\"status\\\":\\\"Active\\\",\\\"itemStatusId\\\":\\\"ACT\\\",\\\"itemStatus\\\":\\\"Active\\\",\\\"nextBillingDate\\\":\\\"2025-03-13T10:17:54.437228\\\",\\\"cancellationUrl\\\":\\\"https:\\/\\/store.gonitro.com\\/cmcx\\/304\\/self-service\\/tabs\\/default?sid=56670560&s=1710325081&e=1712917081&c=7C2344A6F093612601451EE8366EA0E3849C4B45&purchaseitemrunningno=1\\\",\\\"changePaymentSubscriptionUrl\\\":\\\"https:\\/\\/store.gonitro.com\\/304\\/scp\\/s56670560?s=1710325081&e=1712917081&c=7C2344A6F093612601451EE8366EA0E3849C4B45\\\",\\\"nextBillingProfit\\\":{\\\"grossRevenue\\\":201.46,\\\"collectedVat\\\":33.58,\\\"netRevenue\\\":167.88,\\\"cbMarginPercentage\\\":0,\\\"cbMarginFix\\\":0,\\\"yourNetProfit\\\":167.88,\\\"yourVat\\\":0,\\\"yourGrossProfit\\\":167.88},\\\"renewalType\\\":\\\"Automatic\\\",\\\"subscriptionManagementModel\\\":\\\"2.0\\\"},\\\"licensePeriodInMonths\\\":12,\\\"yourCurrentProductId\\\":\\\"nitro-pro\\\"}],\\\"extraParameters\\\":{\\\"x-iscompany\\\":\\\"NO\\\",\\\"x-lae_vid\\\":\\\"\\\",\\\"x-ml_eg\\\":\\\"DIRECT\\\",\\\"x-r-source\\\":\\\"email-1\\\",\\\"x-source\\\":\\\"perpout_segment1\\\",\\\"x-volumediscount\\\":\\\"hide\\\",\\\"x-wdl_delay\\\":\\\"180\\\"}}"}, 
+  attributes: {|
+    clientCertificate?: {|
+      publicKey?: {|  |}, 
+      "type"?: String, 
+      encoded?: Binary
+    |}, 
+    headers: {|
+      client_id: String, 
+      client_secret: String
+    |}, 
+    listenerPath: String, 
+    method: String, 
+    queryParams: {|  |}, 
+    queryString: String, 
+    relativePath: String, 
+    remoteAddress: String, 
+    requestPath: String, 
+    requestUri: String, 
+    scheme: String, 
+    uriParams: {|  |}, 
+    version: String, 
+    localAddress: String
+  |}
+|} {"typeId": "org.mule.runtime.api.message.Message"}
+

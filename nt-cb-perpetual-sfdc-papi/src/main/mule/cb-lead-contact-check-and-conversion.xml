@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd">
+	<sub-flow name="cb-lead-contact-check-and-conversion-main-flow" doc:id="1b1e8c91-e3da-4434-9cbd-8a045a23758f" >
+		<logger level="INFO" doc:name="Flow Entry" doc:id="53125d6f-86a5-4432-8917-331ec1f57c70" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "cb-lead-contact-check-and-conversion-main-flow started"&#10;}]'/>
+		<ee:transform doc:name="Vars purchaseDetails" doc:id="c3769631-170d-4487-8ea8-79fbaccb46dd">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable resource="dwl/contactLead/purchaseDetails.dwl" variableName="purchaseDetails" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="Flow-ref to country-mapping-sub-flow" doc:id="369073d8-6fad-4a42-b621-1a4019fd560c" name="country-mapping-sub-flow" />
+		<flow-ref doc:name="Flow-ref to contact-lead-mapping-sub-flow" doc:id="2ed8e064-39ff-4615-907d-6216c09f3ea1" name="contact-lead-mapping-sub-flow" />
+		<logger level="INFO" doc:name="Flow Exit" doc:id="4845a32b-d258-403c-8377-0a7fde0dfd65" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "cb-lead-contact-check-and-conversion-main-flow Ended"&#10;}]'/>
+		
+	</sub-flow>
+	<sub-flow name="country-mapping-sub-flow" doc:id="cf1fb20e-8f14-4983-8ab7-a6ec4b236157">
+		<ee:transform doc:name="Var LookupTables" doc:id="133bc49f-421b-45bd-b6cd-60f8f37e3263">
+			<ee:message >
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable resource="dwl/contactLead/lookupTables.dwl" variableName="lookupTables" />
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Set Payload" doc:id="d99c1eb9-0adf-423f-a7c3-68db8918615b">
+			<ee:message>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="dwl/contactLead/lookupOutput.dwl" variableName="lookupOutput" />
+			</ee:variables>
+		</ee:transform>
+		<remove-variable doc:name="lookupTables" doc:id="c91adbb2-5f3f-4c62-9f1a-21e4ac105c30" variableName="lookupTables"/>
+		<logger level="INFO" doc:name="Flow Exit" doc:id="2d70ec2b-f2ea-468d-b758-143672cbb5a7" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Country mapping process completed"&#10;}]' />
+	</sub-flow>
+	<sub-flow name="contact-lead-mapping-sub-flow" doc:id="bf145c06-468f-4848-9c87-93e10e6b8a93" >
+		<validation:is-true doc:name="Validating cleverbridge email" doc:id="58148303-4f3d-4c7f-914e-c4c48417acde" expression="#[!isEmpty(vars.purchaseDetails.cbEmail)]" message='#["Email from cleverbridge not received."]'/>
+		<salesforce:query doc:name="Query Contact" doc:id="3c1577ec-62ce-44ee-af72-f5d936822b50" config-ref="Salesforce_Config" target="contacts">
+					<salesforce:salesforce-query><![CDATA[#[Mule::p('salesforce.query.contact')]]]></salesforce:salesforce-query>
+					<salesforce:parameters><![CDATA[#[output application/java
+---
+{
+	Email : vars.purchaseDetails.cbEmail
+}]]]></salesforce:parameters>
+				</salesforce:query>
+		<logger level="INFO" doc:name="contact query response" doc:id="efd3ae9a-509b-4f9c-9eda-b81844e57264" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Contact Query Response",&#10; "contactPayload" : vars.contacts&#10;}]'/>
+		<ee:transform doc:name="Mapping contact with newest last modified date" doc:id="632f6a86-7bed-4bd6-8620-0c06e3e796f4">
+					<ee:message />
+					<ee:variables>
+				<ee:set-variable resource="dwl/contactLead/purchaseDetailsContact.dwl" variableName="purchaseDetails" />
+					</ee:variables>
+				</ee:transform>
+		<salesforce:query doc:name="Query Lead" doc:id="58757a86-cd3f-496c-94b8-f7f396755ab4" config-ref="Salesforce_Config" target="leadsDetails" targetValue="#[output application/json --- payload]">
+					<salesforce:salesforce-query><![CDATA[#[Mule::p('salesforce.query.lead')]]]></salesforce:salesforce-query>
+					<salesforce:parameters><![CDATA[#[output application/java
+---
+{
+	Email : vars.purchaseDetails.cbEmail
+}]]]></salesforce:parameters>
+				</salesforce:query>
+		<ee:transform doc:name="var-latestLeadsAccountDetails" doc:id="3bf55422-7c87-4242-9351-1bd0e0b3246b">
+			<ee:message>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="latestLeadsAccountDetails" ><![CDATA[%dw 2.0
+output application/json
+---
+if(sizeOf(vars.leadsDetails) >= 1) 
+	(
+		(vars.leadsDetails orderBy (
+			(item, index) -> (item.LastModifiedDate as DateTime)
+		))[-1].Matched_Account_ID__c default ""
+	) 
+else ""]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="lead query response" doc:id="14c3017a-98e4-48fb-bf78-2beaec86c76d" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Lead Query Response",&#10; "leadPayload" : vars.leadsDetails&#10;}]'/>
+		<ee:transform doc:name="Setting Variables" doc:id="0936d8ba-3d2b-46a1-ae04-d3810a350ca8">
+					<ee:message>
+					</ee:message>
+					<ee:variables>
+				<ee:set-variable resource="dwl/contactLead/purchaseDetailsAccount.dwl" variableName="purchaseDetails" />
+				<ee:set-variable variableName="isUpgrade" ><![CDATA[%dw 2.0
+output application/java
+---
+if(isEmpty(vars.realPayload.extraParameters."x-serial"))
+false
+else
+true]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+		<choice doc:name="Check if it is an upgrade notification " doc:id="26784c40-53e6-4097-924a-82c679a1a519" >
+			<when expression="#[vars.isUpgrade]">
+				<salesforce:query doc:name="account-query" doc:id="0489874f-b806-4793-b654-4267e16779b4" config-ref="Salesforce_Config" target="queryAccountRes">
+					<salesforce:salesforce-query ><![CDATA[#["select id,Serial_Number__c,Is_Active__c, Asset__r.Account.name, Asset__r.Account.id,Asset__c from Serial__c where Serial_Number__c in ('" ++ vars.realPayload.extraParameters."x-serial" ++ "')"]]]></salesforce:salesforce-query>
+				</salesforce:query>
+				<ee:transform doc:name="accountId" doc:id="0f6d4fa5-74ec-4b7c-b8ba-98d975eaf5a8" >
+					<ee:message >
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="purchaseDetails" ><![CDATA[%dw 2.0
+output application/json
+---
+(vars.purchaseDetails - "accountId") ++ 
+{"accountId": vars.queryAccountRes.Asset__r.Account[0].Id}]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Info Logger" doc:id="224a88f4-2d13-406a-92ed-9a211eac6032" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Received notification is not an upgrade notification"&#10;}]'/>
+			</otherwise>
+		</choice>
+		<flow-ref doc:name="cb-lead-contact-check-and-conversionSub_Flow" doc:id="a51eacb0-1d3b-4f5f-8925-6d663969ccce" name="cb-lead-contact-check-and-conversionSub_Flow" />
+	</sub-flow>
+	<sub-flow name="cb-lead-contact-check-and-conversionSub_Flow" doc:id="cd3eaffa-c7c6-42ec-a7e9-8fa9b2f82977" >
+		<choice doc:name="Check lead and contact" doc:id="92919456-2744-49ad-b987-d19797c292bb" >
+			<when expression="#[((vars.purchaseDetails.contactSize) &gt; 0) and ((vars.purchaseDetails.leadSize) &gt; 0) and (!isEmpty(vars.purchaseDetails.accountId))]" >
+				<ee:transform doc:name="Lead convert mapping" doc:id="1b04d01f-ef10-4e43-adac-45ca6d5a6f92">
+					<ee:message>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable resource="dwl/contactLead/leadData.dwl" variableName="leadData" />
+					</ee:variables>
+				</ee:transform>
+				<flow-ref doc:name="Flow-ref to lead-convert-sub-flow" doc:id="4ca8436d-7843-42ca-a786-c6ee65ce68df" name="lead-convert-sub-flow"/>
+				<ee:transform doc:name="Update contact payload mapping" doc:id="7770d4a1-48dd-482e-ab4e-469a2d51c851" >
+					<ee:message >
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable resource="dwl/contactLead/updateContactData.dwl" variableName="updateContactData" />
+					</ee:variables>
+				</ee:transform>
+				<flow-ref doc:name="flow-ref to update-contact-sub-flow" doc:id="d1613812-461a-43b8-b4e6-974964168cc0" name="update-contact-sub-flow"/>
+				<remove-variable doc:name="convertedLead" doc:id="8a51c2cf-f8bc-4e73-bdac-56ea80390d3f" variableName="convertedLead"/>
+			</when>
+			<when expression="#[((vars.purchaseDetails.contactSize) &gt; 0) and ((vars.purchaseDetails.leadSize) == 0) and isEmpty(vars.purchaseDetails.accountId)]" >
+				<raise-error doc:name="Raise error" doc:id="ff64bd12-ce12-4a8e-9b5b-22e3871488e2" type="CUSTOM:NO_ACCOUNTID" description="Account Id not present"/>
+			</when>
+			<when expression="#[((vars.purchaseDetails.contactSize) &gt; 0) and ((vars.purchaseDetails.leadSize) == 0) and (!isEmpty(vars.purchaseDetails.accountId))]" >
+				<ee:transform doc:name="Update contact payload mapping" doc:id="5dc5379c-d571-4f4c-9cd0-42a02a0c71d1">
+					<ee:message>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable resource="dwl/contactLead/updateContactData.dwl" variableName="updateContactData" />
+					</ee:variables>
+				</ee:transform>
+				<flow-ref doc:name="Flow-ref to update-contact-sub-flow" doc:id="3035680e-b1c3-42b6-8edb-dc7766dae78c" name="update-contact-sub-flow"/>
+			</when>
+			<when expression="#[((vars.purchaseDetails.contactSize) == 0) and ((vars.purchaseDetails.leadSize) &gt; 0)]" >
+				<choice doc:name="Check if it is an upgrade notification" doc:id="16e346f4-422d-4946-8822-703ae009109e">
+					<when expression="#[vars.isUpgrade]">
+						<logger level="INFO" doc:name="upgrade" doc:id="cf68efd2-6c32-4af9-8f6e-b5c5495ec769" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now() &gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Using the existing account details for the purchase upgrade transaction."&#10;}]'/>
+					</when>
+					<otherwise >
+						<flow-ref doc:name="CreateAccount_SubFlow" doc:id="f01dca68-eaa6-4a36-bcf8-703fff56f657" name="CreateAccount_SubFlow" />
+					</otherwise>
+				</choice>
+				<ee:transform doc:name="Lead convert mapping" doc:id="8bb2443d-519a-4e34-b205-1359cec704a7">
+					<ee:message>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable resource="dwl/contactLead/leadData1.dwl" variableName="leadData" />
+					</ee:variables>
+				</ee:transform>
+				<flow-ref doc:name="Flow-ref to lead-convert-sub-flow" doc:id="a5b9a2f1-dcbf-4878-9f21-c08474bb201c" name="lead-convert-sub-flow"/>
+				<choice doc:name="More Leads To Convert?" doc:id="4028c3aa-1a8d-4740-a4b8-c3bffdcdd6bf">
+					<when expression="#[vars.leadsDetails[1 to -1] != null]">
+						<ee:transform doc:name="Subsequent Lead Convert Mapping" doc:id="dd65cba5-0c77-40dd-9942-a09696f2f351">
+							<ee:message />
+							<ee:variables>
+								<ee:set-variable resource="dwl/contactLead/leadDataWithNewContact.dwl" variableName="leadData" />
+							</ee:variables>
+						</ee:transform>
+						<flow-ref doc:name="lead-convert-sub-flow" doc:id="03883163-2e12-4c81-b2ae-e2e3332c4273" name="lead-convert-sub-flow" />
+					</when>
+					<otherwise >
+						<logger level="INFO" doc:name="Info Logger" doc:id="f38634bc-8c4b-4109-ad0f-32895749f1fd" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "does not contain multiple Leads"&#10;}]'/>
+					</otherwise>
+				</choice>
+				<ee:transform doc:name="Update contact payload mapping" doc:id="b49dc986-9272-430e-8a69-fcc7f801560a" >
+					<ee:message >
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable resource="dwl/contactLead/updateContactDataConvertedLead.dwl" variableName="updateContactData" />
+						<ee:set-variable variableName="purchaseDetails" ><![CDATA[%dw 2.0
+output application/java
+---
+(vars.purchaseDetails - "contactId") ++ 
+{"contactId": vars.convertedLead.contactId}]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<flow-ref doc:name="flow-ref to update-contact-sub-flow" doc:id="86a15a17-4934-4ad8-8fee-fb3e988516f5" name="update-contact-sub-flow" />
+				<remove-variable doc:name="convertedLead" doc:id="e28eb8a4-c38d-4054-a76c-3d83a4ee8208" variableName="convertedLead"/>
+			
+</when>
+			<when expression="#[vars.purchaseDetails.contactSize == 0 and vars.purchaseDetails.leadSize == 0]">
+				<choice doc:name="Check if it is an upgrade notification" doc:id="2715592b-3a6e-4716-924c-2595f1492f04">
+					<when expression="#[vars.isUpgrade]">
+						<logger level="INFO" doc:name="upgrade" doc:id="68678645-bfaa-432d-8580-a9a0c2975114" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now() &gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Using the existing account details for the purchase upgrade transaction."&#10;}]'/>
+					</when>
+					<otherwise >
+						<flow-ref doc:name="CreateAccount_SubFlow" doc:id="01bdaf4f-9561-46a8-be45-072f68f3b2a4" name="CreateAccount_SubFlow" />
+					</otherwise>
+				</choice><ee:transform doc:name="CreateContactData" doc:id="050b37b7-6d11-4bab-8496-04338f00d506">
+					<ee:message />
+					<ee:variables>
+						<ee:set-variable resource="dwl/contactLead/createContactData.dwl" variableName="CreateContactData" />
+					
+
+</ee:variables>
+				</ee:transform>
+				<logger level="INFO" doc:name="Create Contact Logger" doc:id="e1ba21d5-46a3-4518-b3e4-a3037ee13c29" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now() >>"EST",&#10; "logLevel": "Info",&#10; "message": "before creating contact",&#10; "payload": vars.CreateContactData&#10;}]' />
+				<salesforce:create type="Contact" doc:name="Create Contact" doc:id="fce97ec0-5fea-4003-b3c4-255d3ecfb0a2" config-ref="Salesforce_Config" target="CreateContactData">
+					<salesforce:records><![CDATA[#[vars.CreateContactData]]]></salesforce:records>
+				</salesforce:create>
+				<validation:is-true doc:name="Is create contact successful" doc:id="ba76c625-dcae-415d-974b-535f66c49689" expression="#[vars.CreateContactData.successful]" message='#["An error occurred while creating contact in Salesforce. The error are : \n" &#10;++ ((vars.CreateContactData.items.exception.localizedMessage default []) joinBy "\n")]' />
+				<ee:transform doc:name="processed" doc:id="c40b6d9d-76da-47ac-b581-32984ee9aafa" >
+					<ee:message />
+					<ee:variables >
+						<ee:set-variable resource="dwl/contactLead/processed.dwl" variableName="processed" />
+					</ee:variables>
+				</ee:transform>
+				<ee:transform doc:name="accountId" doc:id="2df2e5ff-8ff8-4612-a476-e2749baf8f5d" >
+					<ee:message />
+					<ee:variables >
+						<ee:set-variable resource="dwl/contactLead/purchaseDetailsContact1.dwl" variableName="purchaseDetails" />
+					</ee:variables>
+				</ee:transform>
+			
+
+</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Info Logger" doc:id="40a3e078-2f93-46e2-bc7e-a119a4ccfec4" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now() >>"EST",&#10; "logLevel": "Info",&#10; "message": "no action available for lead-contact-account creation"&#10;}]'/>
+			</otherwise>
+		</choice>
+	</sub-flow>
+	<sub-flow name="update-contact-sub-flow" doc:id="05595e02-f32f-4867-ae5a-14f89754ab47" >
+		<logger level="INFO" doc:name="Flow Entry" doc:id="c3844269-1ac2-4028-b929-824c3d9c7521" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Before updating contact",&#10; "payload": vars.updateContactData&#10;}]' />
+		<salesforce:update doc:name="Update Contact" doc:id="0f7d0558-2611-4e7f-a54b-d9f36d14c40f" config-ref="Salesforce_Config" type="Contact" target="updatedContact">
+					<salesforce:records><![CDATA[#[output application/java
+---
+[vars.updateContactData]]]]></salesforce:records>
+				</salesforce:update>
+		<validation:is-true doc:name="Is update contact successful" doc:id="987a807a-c8db-4a24-ab42-e66e2e1f58e3" expression="#[vars.updatedContact.successful]" message='#["An error occurred while updating contact in Salesforce. The error are : \n \n" &#10;++ ((vars.updatedContact.items.exception.localizedMessage default []) joinBy "\n")]' />
+		<remove-variable doc:name="updatedContact" doc:id="755cf065-b9dd-4328-a29f-b2370bd444f9" variableName="updatedContact"/>
+		<logger level="INFO" doc:name="Flow Exit" doc:id="7f16b112-9cc7-4c36-9ae8-c4f457fd1af1" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Contact has been updated"&#10;}]'/>
+	
+
+</sub-flow>
+	<sub-flow name="CreateAccount_SubFlow" doc:id="cb93d312-1e08-48ab-9ca0-7c11fe446a99">
+		<flow-ref doc:name="Flow-ref to get-account-sub-flow" doc:id="7d58d7c3-1d52-49e9-966a-f93ddddbd540" name="get-account-sub-flow" />
+		<choice doc:name="Check if account is already created" doc:id="0feeccf3-c358-4872-83c1-ea53c36524c8">
+					<when expression="#[sizeOf(vars.accountDetails) == 0]">
+						<ee:transform doc:name="CreateAccountData" doc:id="33bf1e59-8199-486a-92cf-8377167e8834">
+							<ee:message>
+							</ee:message>
+							<ee:variables>
+						<ee:set-variable resource="dwl/contactLead/createAccountData.dwl" variableName="CreateAccountData" />
+							
+</ee:variables>
+						</ee:transform>
+						<logger level="INFO" doc:name="Create Account" doc:id="ef3aa899-9e7c-4df2-bf43-34e0e7610536" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "before creating account",&#10; "payload": vars.CreateAccountData&#10;}]' />
+				<salesforce:create doc:name="Create Account" doc:id="26446623-3e15-417f-bedb-ad994eb45dd9" config-ref="Salesforce_Config" type="Account" target="createdAccount">
+							<salesforce:records><![CDATA[#[vars.CreateAccountData]]]></salesforce:records>
+						</salesforce:create>
+				<validation:is-true doc:name="Is account created successful" doc:id="8083b84c-dd8d-4785-9c95-2161dfb7bfb3" expression="#[vars.createdAccount.successful]" message='#["An error occurred while creating account in Salesforce. The error are : \n " ++ ((vars.createdAccount.items.exception.localizedMessage default []) joinBy "\n")]' />
+				<remove-variable doc:name="CreateAccountData" doc:id="be7d1192-09b8-46ca-b757-8666ff61c2dc" variableName="CreateAccountData"/>
+				<ee:transform doc:name="vars processed" doc:id="e925d804-6ca4-45d4-a7ac-59d9be38b931">
+					<ee:message>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable resource="dwl/contactLead/processedAccount.dwl" variableName="processed" />
+					</ee:variables>
+				</ee:transform>
+					
+
+</when>
+			<otherwise>
+						<logger level="INFO" doc:name="Info Logger" doc:id="f9d5299a-2d75-4432-aa59-e71173dff80f" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Account already exist"&#10;}]' />
+					</otherwise>
+				</choice>
+		<ee:transform doc:name="accountId" doc:id="b6c0fec0-f834-4e7d-9243-b6b5e19912e1" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="dwl/contactLead/purchaseDetailsAccountId.dwl" variableName="purchaseDetails" />
+			
+</ee:variables>
+		</ee:transform>
+	
+</sub-flow>
+	<sub-flow name="lead-convert-sub-flow" doc:id="f2011e04-8341-4067-90cd-71861845ee87" >
+		<logger level="INFO" doc:name="Flow Entry" doc:id="9831e726-1157-4863-a689-12568c74bc55" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "lead-convert sub-flow start",&#10; "payload": vars.leadData&#10;}]' />
+		<foreach doc:name="For Each" doc:id="7acae943-75a9-4985-adcb-71c60f1b132d" collection="#[vars.leadData]">
+			<salesforce:convert-lead doc:name="Convert lead" doc:id="780c70f2-b69b-4f21-aad2-01aa981dfdf6" config-ref="Salesforce_Config" target="convertedLead">
+					<salesforce:lead-convert-request><![CDATA[#[output application/java
+---
+payload]]]></salesforce:lead-convert-request>
+				</salesforce:convert-lead>
+			<validation:is-true doc:name="Is lead converted successful" doc:id="0f77108e-20cb-4a20-8feb-1d8b260829c8" expression="#[vars.convertedLead.success]" message='#["An error occurred while converting lead. The error are : \n " ++ ( vars.convertedLead.errors[0].message default "")]' />
+		
+</foreach>
+		<remove-variable doc:name="leadData" doc:id="ec4d5f0e-5c44-4525-80e9-450ba85841e7" variableName="leadData" />
+		<logger level="INFO" doc:name="Flow Exit" doc:id="b8e960c6-b6e9-4d8e-917a-23640a4a4fd9" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "lead-convert sub-flow exit"&#10;}]' />
+	</sub-flow>
+	<sub-flow name="get-account-sub-flow" doc:id="e7586b11-c0db-48b9-bc76-b2eaf75cca7c" >
+		<set-variable value='#[output application/json&#10;---&#10;if (!isEmpty(vars.purchaseDetails.company)) vars.purchaseDetails.company&#10;else if (isEmpty(vars.purchaseDetails.state)) vars.purchaseDetails.lastName ++ ", " ++ vars.purchaseDetails.firstName ++ ", " ++ vars.purchaseDetails.country&#10;else vars.purchaseDetails.lastName ++ ", " ++ vars.purchaseDetails.firstName ++ ", " ++ vars.purchaseDetails.state ++ ", " ++ vars.purchaseDetails.country]' doc:name="accountName" doc:id="e0c18c3a-facb-4b92-9095-674f59f54e4d" variableName="accountName" />
+		<logger level="INFO" doc:name="Flow Entry" doc:id="6467ce2b-1acb-48f1-b7c9-38671888b644" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Before query the account request",&#10; "payload": "accountName: " ++ vars.accountName default "" ++ " postalCode: " ++ vars.purchaseDetails.postalCode default ""&#10;}]' />
+		<salesforce:query doc:name="Query Account" doc:id="087d8e21-c79f-49ad-89d9-5263bbd0cc50" config-ref="Salesforce_Config" target="accountDetails">
+			<salesforce:salesforce-query><![CDATA[#[Mule::p('salesforce.query.account')] ]]></salesforce:salesforce-query>
+			<salesforce:parameters><![CDATA[#[output application/java
+---
+{
+	accountName : vars.accountName replace "'" with "\'",
+	postalCode : vars.purchaseDetails.postalCode
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<logger level="INFO" doc:name="Flow Exit" doc:id="dbcd35d3-2906-4d7c-ad8b-3f619c31cdb8" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "get-account sub-flow exit here",&#10; "AccountPayload" : vars.accountDetails&#10;}]' />
+	</sub-flow>
+</mule>

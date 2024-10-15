@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<error-handler name="global-error-handler" doc:id="c436671a-e024-4c9f-9d89-f4c588f907d4" >
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="6ac56f05-80c1-4ddd-9545-ca3250eac172">
+			<choice doc:name="choice-for-reprocessing" doc:id="e6dd8274-70f9-4725-afef-68dd1fc33983" >
+				<when expression='#[error.errorType.namespace != "MULE"]'>
+					<ee:transform doc:name="payload, errorPayload" doc:id="7f354453-b864-4866-9f6a-ca1b5f3098cd">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+(vars.realPayload - "processedPayload" - "processed") ++ {"processedPayload": vars.processedPayload, "processed": vars.processed}]]></ee:set-payload>
+						</ee:message>
+						<ee:variables >
+							<ee:set-variable variableName="errorPayload" ><![CDATA[%dw 2.0
+output application/java
+---
+error.detailedDescription]]></ee:set-variable>
+							<ee:set-variable variableName="errortype" ><![CDATA[%dw 2.0
+output application/java
+---
+if(error.errorType.namespace == "VALIDATION")
+"SALESFORCE:INTERNAL_ERROR"
+else
+(error.errorType.namespace ++ ":" ++ error.errorType.identifier)]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+					<os:store doc:name="store-payload" doc:id="18cfcc39-7f5d-4591-b7f0-0652c01dc65c" key="#[payload.purchaseId]" objectStore="Object_store"/>
+					<logger level="INFO" doc:name="log-error-after-os-store" doc:id="bdf85d3b-addd-4215-bc30-07841168c55f" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Error has added to the object store",&#10; "Error": error.detailedDescription&#10;}]'/>
+				</when>
+				<otherwise >
+					<logger level="INFO" doc:name="no-reprocessing" doc:id="be2db653-d729-4579-8aac-5eb5f607ee6a" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Error is not added to OS because it is an internal error",&#10; "Error": error.detailedDescription&#10;}]'/>
+				</otherwise>
+			</choice>
+			<ee:transform doc:name="email-body" doc:id="0d3764bd-2a4d-406e-bb50-8e16222b3e5a" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"correlationId": correlationId,
+	"applicationName": app.name,
+ 	"environment": Mule::p("mule.env"),
+ 	"timestamp": now() >>"EST",
+ 	"logLevel": "Info",
+	"errorDetails": vars.errorPayload default error.detailedDescription
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="reportData" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"PurchaseId": vars.realPayload.purchaseId,
+	"CorrelationId": correlationId,
+	"status": "Failed",
+	"Type": vars.realPayload.status,
+	"Timestamp":now()>>"EST",
+	"reprocessing": vars.reprocessing default false
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<os:store doc:name="store-report-data" doc:id="b3fdc63e-7181-4a3a-a965-e04408d82312" key='#[correlationId]' objectStore="create-report">
+				<os:value ><![CDATA[#[vars.reportData]]]></os:value>
+			</os:store>
+			<ee:transform doc:name="html-template" doc:id="78aa7b63-6526-4b0b-a462-3cf929818fdd" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="time" ><![CDATA[%dw 2.0
+output application/json
+---
+'<p>Hi Team, <br />Please find error details below:</p>
+<table style="height: 130px; width: 502px; border-style: solid;" border="3">
+<tbody>
+<tr style="height: 30px;">
+<td style="height: 30px; width: 182.56px;"><strong>&nbsp; Timestamp</strong></td>
+<td style="height: 30px; width: 308.295px;">&nbsp; &nbsp;' ++ (now() >>"EST")]]></ee:set-variable>
+					<ee:set-variable variableName="appname" ><![CDATA[%dw 2.0
+output application/json
+---
+'</td>
+</tr>
+<tr style="height: 34px;">
+<td style="height: 34px; width: 182.56px;"><strong>&nbsp; Application Name</strong></td>
+<td style="height: 34px; width: 308.295px;">&nbsp; &nbsp;'++ app.name]]></ee:set-variable>
+					<ee:set-variable variableName="purchId" ><![CDATA[%dw 2.0
+output application/json
+---
+'</td>
+</tr>
+<tr style="height: 34px;">
+<td style="height: 34px; width: 182.56px;"><strong>&nbsp; purchaseId</strong></td>
+<td style="height: 34px; width: 308.295px;">&nbsp; &nbsp;' ++ vars.realPayload.purchaseId default ""]]></ee:set-variable>
+					<ee:set-variable variableName="env" ><![CDATA[%dw 2.0
+output application/json
+---
+'</td>
+</tr>
+<tr style="height: 29px;">
+<td style="height: 29px; width: 182.56px;"><strong>&nbsp; Environment Name</strong></td>
+<td style="height: 29px; width: 308.295px;">&nbsp; &nbsp;' ++ Mule::p('mule.env')]]></ee:set-variable>
+					<ee:set-variable variableName="errortyp" ><![CDATA[%dw 2.0
+output application/json
+---
+'</td>
+</tr>
+<tr style="height: 37px;">
+<td style="height: 37px; width: 182.56px;"><strong>&nbsp; Error Type</strong></td>
+<td style="height: 37px; width: 308.295px;">&nbsp; &nbsp;' ++ (vars.errortype default (error.errorType.namespace ++ ":" ++ error.errorType.identifier))]]></ee:set-variable>
+					<ee:set-variable variableName="errordet" ><![CDATA[%dw 2.0
+output application/json
+---
+'</td>
+</tr>
+<tr style="height: 37px;">
+<td style="height: 37px; width: 182.56px;"><strong>&nbsp; Error Details</strong></td>
+<td style="height: 37px; width: 308.295px;">&nbsp; &nbsp;' ++ payload.errorDetails default ""]]></ee:set-variable>
+					<ee:set-variable variableName="tail" ><![CDATA[%dw 2.0
+output application/json
+---
+'</td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<p>There is a JSON attachment with this Email, which contains all the salesforce records created until this error in Salesforce.</p>
+<p>Kindly take note of this</p>']]></ee:set-variable>
+					<ee:set-variable variableName="correlation" ><![CDATA[%dw 2.0
+output application/json
+---
+'</td>
+</tr>
+<tr style="height: 29px;">
+<td style="height: 29px; width: 182.56px;"><strong>&nbsp; Correlation Id</strong></td>
+<td style="height: 29px; width: 308.295px;">&nbsp; &nbsp;' ++ correlationId]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<ee:transform doc:name="send email payload" doc:id="2d38d85b-5fb8-4777-b87a-6b424ce14d83" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.time ++ vars.appname ++ vars.purchId ++ vars.correlation ++ vars.env ++ vars.errortyp ++ vars.errordet ++ vars.tail]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<ee:transform doc:name="parse-html" doc:id="bad1615a-a578-4fa7-a6a4-374c97d679ed" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output text/plain
+---
+payload replace  "\"<tr" with "<tr" replace  "tr>\"" with "tr>"]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<http:request method="POST" doc:name="send-email" doc:id="ea2fc5dd-171a-4981-b666-5191cd9b9f0d" config-ref="HTTP_Request_configuration_sendMail" path="${sendMail.path}" responseTimeout="60000">
+				<http:body ><![CDATA[#[output application/json
+import * from dw::core::Binaries
+---
+{
+    "api_key": p('secure::sendMail.apiKey'),
+    "to": p('sendMail.receipients') splitBy ",",
+    "sender": "MuleSoft <mulesoft@domain.com>",
+    "subject": "Error message from Cleverbridge Perpetual to Salesforce integration :: " ++ p('mule.env'),
+    "html_body": payload,
+    ("attachments": [
+        {
+            "filename": "processedIds.json",
+            "fileblob": toBase64(write(vars.processed, "applicaton/json")),
+            "mimetype": "application/json"
+        }
+    ]) if(vars.processed != null)
+}]]]></http:body>
+			</http:request>
+			<logger level="INFO" doc:name="error-email-sent" doc:id="8fa574c8-b41c-44e5-973b-d20385155f75" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Error email has sent"&#10;}]'/>
+		</on-error-continue>
+	</error-handler>
+</mule>

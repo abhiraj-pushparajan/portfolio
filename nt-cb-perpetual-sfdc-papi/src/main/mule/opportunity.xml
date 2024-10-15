@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="update-opportunity" doc:id="48837dee-c9c7-4408-be8f-d1ae90a5cb8b" >
+		<ee:transform doc:name="update-opportunity" doc:id="2d3beaea-62ed-4bd2-a4fc-886a039d218a">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable resource="dwl/opportunity/refund/updateOpportunity.dwl" variableName="updateOpportunity" />
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Info Logger" doc:id="2c566644-418e-483a-8fc7-d72498789e68" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "update opportunity in salesforce",&#10; "payload": vars.updateOpportunity&#10;}]'/>
+		<salesforce:update doc:name="update-opportunity" doc:id="18879b35-0016-4ede-8f40-aee049841f7a" config-ref="Salesforce_Config" type="Opportunity" target="updateOpportunity">
+			<salesforce:records><![CDATA[#[vars.updateOpportunity]]]></salesforce:records>
+		</salesforce:update>
+		<validation:is-true doc:name="Is true" doc:id="4ebd53f0-ebfc-4ea2-b821-e30ca420a26d" expression="#[vars.updateOpportunity.successful]" message='#["Transaction failed while creating the opportunity in salesforce. The errors are :" ++ ((vars.updateOpportunity.items.exception.localizedMessage default []) joinBy "\n")]' />
+	</sub-flow>
+	<sub-flow name="get-account-details-subflow" doc:id="e3d49f11-f49c-4f02-b699-a5eb337ce87d" >
+		<salesforce:query doc:name="Query-account details" doc:id="f6c4c261-b16e-4002-ab24-00bff5e16e7a" config-ref="Salesforce_Config" target="accountName">
+			<salesforce:salesforce-query ><![CDATA[SELECT FIELDS(ALL) from Account Where Id = ':Id']]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[output application/java
+---
+{
+	"Id" : vars.accountId
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<ee:transform doc:name="Set AccountName" doc:id="9c00cef6-0f1f-474d-ac2d-bbffaffdd1a9" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="accountName" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.accountName.Name[0]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="create-asset-subflow" doc:id="60bb70b0-67eb-4456-b307-0ac66dd3aa57" >
+		<choice doc:name="Check if Asset is already created " doc:id="c9ff321f-19ca-4fc0-a96e-38baae386148" >
+			<when expression="#[!isEmpty(vars.createAssetPayloadReq)]">
+				<logger level="INFO" doc:name="Info Logger" doc:id="cd103340-cc51-45bd-9e64-46659c932761" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "create Asset in salesforce",&#10; "payload": vars.createAssetPayloadReq&#10;}]'/>
+				<salesforce:create doc:name="Create-Asset" doc:id="d0c0c2e3-6526-481a-9566-37ec2ef3a3c5" config-ref="Salesforce_Config" type="Asset" target="createAssetPayload">
+									<salesforce:records><![CDATA[#[vars.createAssetPayloadReq]]]></salesforce:records>
+								</salesforce:create>
+				<ee:transform doc:name="add-asset-to-processed" doc:id="64514ae5-c625-450b-b670-93773ce7911a">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="processed"><![CDATA[%dw 2.0
+output application/json
+---
+(vars.processed - "asset") ++ {asset: vars.processed.asset ++ vars.createAssetPayload.items.id}]]></ee:set-variable>
+			<ee:set-variable variableName="processedPayload"><![CDATA[%dw 2.0
+output application/json
+---
+(vars.processedPayload - "asset") ++ {asset: vars.processedPayload.asset ++ vars.createAssetPayloadReq}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+				<validation:is-true doc:name="Is true" doc:id="756f3ffa-9716-4706-832e-b2b4c9fcf9ef" expression="#[vars.createAssetPayload.successful]" message='#["Transaction failed while creating the Asset in salesforce. The errors are :" ++ ((vars.createAssetPayload.items.exception.localizedMessage default []) joinBy "\n")]' />
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Info Logger" doc:id="28cf0d77-606e-487c-9968-1c8eac4f7317" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Asset has already created as part of normal flow"&#10;}]'/>
+				<ee:transform doc:name="set Asset Id" doc:id="8f04f040-a8de-45e9-828a-bab78f94f216" >
+					<ee:message >
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="createAssetPayload" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	items: vars.processed.asset map{id: $}
+}]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</sub-flow>
+	<sub-flow name="update-asset-subflow" doc:id="07242260-db07-4ebd-8a51-4310c242e1a4" >
+		<logger level="INFO" doc:name="Info Logger" doc:id="38e14ecd-61d1-42f3-84ee-38edbadb852e" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "update Asset in salesforce",&#10; "payload": vars.updateAssetPayload&#10;}]'/>
+		<salesforce:update doc:name="Update-Asset" doc:id="659d71d4-ab8f-4dd4-8d65-a3469bbf9e18" config-ref="Salesforce_Config" type="Asset" target="updateAssetPayload">
+						<salesforce:records><![CDATA[#[vars.updateAssetPayload]]]></salesforce:records>
+					</salesforce:update>
+		<ee:transform doc:name="add-asset-to-processed" doc:id="f65e2c48-bac0-4b1c-92d3-f40c96a8875d" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="processed" ><![CDATA[%dw 2.0
+output application/json
+---
+(vars.processed - "asset") ++ {asset: (flatten(vars.processed.asset + vars.updateAssetPayload.items.id)) distinctBy ($)}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<validation:is-true doc:name="Is true" doc:id="bedff840-ba6f-4545-b763-c812ad6885ea" expression="#[vars.updateAssetPayload.successful]" message='#["Transaction failed while updating asset in salesforce. The errors are :" ++ ((vars.updateAssetPayload.items.exception.localizedMessage default []) joinBy "\n")]'/>
+	
+	</sub-flow>
+	<sub-flow name="call-oppurtunity-paid-flow" doc:id="af63d455-f7af-4ef8-887d-4df4fd8a76df" >
+		<logger level="INFO" doc:name="Start Logger" doc:id="a7e92fa8-7b5c-456c-9112-54c453d28305" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Start of call-oppurtunity-paid-flow"&#10;}]'/>
+		<set-variable value="#[&quot;Select Id from Opportunity where Name LIKE '%&quot; ++ payload.purchaseId ++&quot;%'&quot;]" doc:name="Set Query" doc:id="a3f3839d-25be-41a9-a651-cf926bc41bfc" variableName="query"/>
+		<logger level="INFO" doc:name="Info Logger" doc:id="1c877207-6fee-4281-a5a2-de55a8dd548a" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Search Opportunity in Salesforce using Cleverbridge Purchase ID",&#10; "query": vars.query&#10;}]' />
+		<salesforce:query doc:name="Query-Salesforce Opportunity Object" doc:id="cc2d6ba5-3add-4815-81fe-14df9c888d11" config-ref="Salesforce_Config" target="opportunityId">
+			<salesforce:salesforce-query ><![CDATA[#[vars.query]]]></salesforce:salesforce-query>
+		</salesforce:query>
+		
+		<remove-variable doc:name="Remove Variable-query" doc:id="7e5af93b-3905-42d5-b24b-a0e38f795e34" variableName="query"/>
+		<choice doc:name="Check if Opportunity is present " doc:id="84ee5da6-198c-4beb-a333-86f7af32b343" >
+			<when expression="#[vars.reprocessing]">
+				<logger level="INFO" doc:name="Info Logger" doc:id="35fb4e79-2561-4512-9908-f235f6de82e2" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "start of opportunity flow"&#10;}]'/>
+				<flow-ref doc:name="Flow Reference-opportunity-sub-flow" doc:id="be1be72d-0bc3-41e4-8250-7c265a891909" name="opportunity-sub-flow"/>
+			</when>
+			<when expression="#[sizeOf(vars.opportunityId) &gt; 0]">
+				<logger level="INFO" doc:name="Info Logger" doc:id="d3b72f43-ceed-48da-a45d-00e8ced69a2f" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Opportunity is already present in salesforce. Stopped the Flow"&#10;}]' />
+				<remove-variable doc:name="Remove Variable-opportunityId" doc:id="6dee2ad2-d44f-41d8-bb2d-ce41b81a70bc" variableName="opportunityId" />
+			</when>
+			<otherwise >
+				<remove-variable doc:name="Remove Variable-opportunityId" doc:id="32d073ee-b606-4e7a-b2dc-4e40718618dc" variableName="opportunityId"/>
+				<logger level="INFO" doc:name="Info Logger" doc:id="adfb30db-5f2b-4287-bf7d-f50d835cbc52" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "start of opportunity flow"&#10;}]'/>
+				<flow-ref doc:name="Flow Reference-opportunity-sub-flow" doc:id="77617cd6-bc20-47fc-835b-d149e70d22a2" name="opportunity-sub-flow"/>
+				
+</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="End Logger" doc:id="d3bf75fa-1b9a-4c1f-9519-a79914322f82" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "End of call-oppurtunity-paid-flow"&#10;}]'/>
+	</sub-flow>
+	<sub-flow name="opportunity-sub-flow" doc:id="c2cf19a7-d05d-4060-a4ce-1ac0e9189dab" >
+						<flow-ref doc:name="Flow Reference-currency-code-flow" doc:id="03f85ccc-2085-4165-a150-a85e6a9daa97" name="currency-code-flow"/>
+				<flow-ref doc:name="Flow Reference-get-account-details-subflow" doc:id="6ed19268-4ac4-4049-9287-94e774e6399b" name="get-account-details-subflow"/>
+		<ee:transform doc:name="create new purchase opportunity" doc:id="28f3291f-ea46-4014-805c-c4579e8025da">
+					<ee:message>
+					</ee:message>
+			<ee:variables>
+				<ee:set-variable resource="dwl/opportunity/paid/createOpportunity.dwl" variableName="newPurchaseOpp" />
+			</ee:variables>
+				</ee:transform>
+				<flow-ref doc:name="Flow Reference-create-new-purchase-opportunity-flow" doc:id="87153aec-5c92-480a-9177-a3c32efde83f" name="create-new-purchase-opportunity-flow"/>
+				<flow-ref doc:name="Flow Reference-create-opportunity-contact-role-flow" doc:id="94665b3b-1e87-4206-975e-0549bf4661ee" name="create-opportunity-contact-role-flow"/>
+				<foreach doc:name="For Each" doc:id="878d234e-4da0-4d13-8d08-3004ed47de95" collection="#[payload.items]">
+					<set-variable value="#[output application/json&#10;---&#10;p('productId.$(payload.productId)')]" doc:name="lookup productId" doc:id="3108e2c1-2e5d-460e-855f-426575904934" variableName="lookupProductId"/>
+					<logger level="INFO" doc:name="Info Logger" doc:id="dd7e2279-19c3-4230-8cee-db7570d3db3c" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "get product details from salesforce"&#10;}]'/>
+			<salesforce:query doc:name="get product details " doc:id="82302682-bac3-4fcd-a8d7-596375095994" config-ref="Salesforce_Config" target="productRes">
+						<salesforce:salesforce-query ><![CDATA[#["Select Id,Name,Online_Upgrade_Product__c,Public_Display_Name__c,Creates_Asset__c,Serialless_Product__c,Product_Version_Distributed_Name__c from Product2 where Id = '" ++ vars.lookupProductId ++ "'"]]]></salesforce:salesforce-query>
+					</salesforce:query>
+					<flow-ref doc:name="Flow Reference-search-pricebook-entry" doc:id="383b0610-2c99-4caf-8e90-36be3d937c99" name="search-pricebook-entry"/>
+					<flow-ref doc:name="Flow Reference-create-opportunity-product-flow" doc:id="95c62167-0759-4f91-bafc-44a8acd64ae1" name="create-opportunity-product-flow"/>
+					<choice doc:name="Check for upgrade purchase path" doc:id="2e639832-84cd-41ae-a18c-5615f1a7fc26" >
+						<when expression="#[vars.productRes.Online_Upgrade_Product__c[0] ~= true]">
+							<flow-ref doc:name="Flow Reference-upgrade-purchase-path-subflow" doc:id="a49df331-e8c2-4715-92de-38ce678e671e" name="upgrade-purchase-path-subflow" />
+						</when>
+						<otherwise>
+							<logger level="INFO" doc:name="Info Logger" doc:id="42468bfe-6e29-46d2-b054-3d73b3e0f063" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "There is no upgrade purchase path"&#10;}]'/>
+					<ee:transform doc:name="query-serial-soql" doc:id="4dd1ba85-7a80-4748-abb5-15ed38c7c73c">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable resource="dwl/opportunity/refund/querySerial.dwl" variableName="querySerial" />
+			</ee:variables>
+		</ee:transform>
+					<flow-ref doc:name="Flow Reference-search-serial-subflow" doc:id="c2a36203-f195-4a1d-b1a4-e65a4a269f48" name="search-serial-subflow" />
+						</otherwise>
+					</choice>
+					<choice doc:name="Check for full purchase path" doc:id="e7c26769-c5f6-4421-bc64-3705ecf2cc28" >
+						<when expression="#[vars.isUpgrade]">
+					<logger level="INFO" doc:name="Logger" doc:id="36a5606f-8d4a-4270-96bd-d615947c62a0" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Purchase upgrade path completed"&#10;}]'/>
+					
+						</when>
+				<when expression="#[vars.reprocessing or ((vars.productRes.Creates_Asset__c[0] ~= true) and isEmpty(vars.querySerial.Asset__c))]">
+					<flow-ref doc:name="full-purchase-sub-flow" doc:id="4b8eca7b-e06e-42fe-ad0a-909fd44909f9" name="full-purchase-sub-flow" />
+				</when>
+				<otherwise >
+							<logger level="INFO" doc:name="Info Logger" doc:id="e63ad4ea-1791-4e50-976f-e43d2d0da362" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Condition did not matched for Full purchase path"&#10;}]'/>
+						</otherwise>
+					</choice>
+				</foreach>
+		<flow-ref doc:name="Flow Reference-update-opportunity" doc:id="f03d2c19-f951-4ecc-8979-46208af279cc" name="update-opportunity"/>
+			
+	</sub-flow>
+	<sub-flow name="currency-code-flow" doc:id="0f2e2220-e036-4d9b-b65b-d493518ec4d1" >
+		<logger level="INFO" doc:name="Info Logger" doc:id="437441c1-032f-45f0-9e3f-85a7d12c5dd1" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Conversion for Currency Code"&#10;}]'/>
+		<ee:transform doc:name="Set Currency Code" doc:id="b705ce13-549b-452b-bd21-ae6f841d8690">
+					<ee:message>
+					</ee:message>
+					<ee:variables>
+				<ee:set-variable resource="dwl/opportunity/paid/currencyCode.dwl" variableName="currencyCode" />
+					</ee:variables>
+				</ee:transform>
+	</sub-flow>
+	<sub-flow name="full-purchase-sub-flow" doc:id="63d10a42-730c-4ade-8d5b-4c486c7af1ae" >
+		<ee:transform doc:name="create asset payload" doc:id="e5a2fdf3-391e-4aac-b856-e107fa24b55d">
+									<ee:message>
+									</ee:message>
+									<ee:variables>
+									<ee:set-variable resource="dwl/opportunity/paid/createAsset.dwl" variableName="createAssetPayloadReq" />
+									</ee:variables>
+								</ee:transform>
+							<flow-ref doc:name="Flow Reference-create-asset-subflow" doc:id="91d0c3fc-5d8e-4329-ab4f-41f5f50076d7" name="create-asset-subflow" />
+							<ee:transform doc:name="create asset opportunity" doc:id="cf84aa5b-eb2e-4556-8ad0-89cfcf2b50b0">
+									<ee:message>
+									</ee:message>
+									<ee:variables>
+									<ee:set-variable resource="dwl/opportunity/paid/createAssetOpportunity.dwl" variableName="assetOpportunity" />
+									</ee:variables>
+								</ee:transform>
+					<flow-ref doc:name="Flow Reference-create-asset-opportunity-flow" doc:id="827847ec-bbcb-4bae-b227-6cf33caa3b34" name="create-asset-opportunity-flow"/>
+							<choice doc:name="Check if Product doesn't require serial" doc:id="5116bc19-b456-4616-8ab1-110973084771">
+									<when expression='#[(vars.productRes.Serialless_Product__c[0] ~= false)]'>
+										<ee:transform doc:name="create new serial payload" doc:id="0fc5b2f2-1a50-49c4-9fff-dc86180d0244">
+											<ee:message>
+											</ee:message>
+											<ee:variables>
+											<ee:set-variable resource="dwl/opportunity/paid/createSerialFullPurchase.dwl" variableName="createNewSerialPayload" />
+											</ee:variables>
+										</ee:transform>
+										<ee:transform doc:name="serial payload" doc:id="5b68d6d3-0e7f-4a7e-967e-9b3aa77021b8">
+										<ee:message>
+										</ee:message>
+										<ee:variables >
+											<ee:set-variable variableName="createNewSerialPayload" ><![CDATA[%dw 2.0
+output application/java
+---
+vars.createNewSerialPayload]]></ee:set-variable>
+										</ee:variables>
+									</ee:transform>
+									<flow-ref doc:name="Flow Reference-create-new-serial-subflow" doc:id="30d42d5a-01c1-482a-9a7d-7f9fcfbc02c4" name="create-new-serial-subflow" />
+									</when>
+									<otherwise>
+							<logger level="INFO" doc:name="Info Logger" doc:id="7a891387-1155-4d7b-a912-e10f9fe629ea" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Product does not require serial"&#10;}]'/>
+									
+</otherwise>
+								</choice>
+	</sub-flow>
+	<sub-flow name="create-new-purchase-opportunity-flow" doc:id="c101c5ea-44e4-4fab-b62d-e01f40c99c08" >
+		<logger level="INFO" doc:name="Start Logger" doc:id="8a98c713-dcf2-4a2d-814c-025dcb95bcd5" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Start of create-new-purchase-opportunity-flow"&#10;}]'/>
+		<choice doc:name="Check if opportunity is already created" doc:id="b06be7d7-f543-4727-92e9-dda1d466630b" >
+			<when expression="#[!isEmpty(vars.newPurchaseOpp)]">
+				<logger level="INFO" doc:name="Info Logger" doc:id="8c9839ed-120c-4412-bb5f-8b6b78f2242d" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "create Opportunity in salesforce",&#10; "payload": vars.newPurchaseOpp&#10;}]'/>
+				<salesforce:create doc:name="Create-new purchase opportunity in SFDC" doc:id="e5035f96-e0cb-4f3e-bae0-6d277f076a0c" config-ref="Salesforce_Config" type="Opportunity" target="newPurchaseOppRes">
+			<salesforce:records><![CDATA[#[vars.newPurchaseOpp]]]></salesforce:records>
+		</salesforce:create>
+				<validation:is-true doc:name="Is true" doc:id="d68ccefb-85ff-41ae-832c-64d2667d71ad" expression="#[vars.newPurchaseOppRes.successful]" message='#["Transaction failed while creating the opportunity in salesforce. The errors are :" ++ ((vars.newPurchaseOppRes.items.exception.localizedMessage default []) joinBy "\n")]' />
+				<ee:transform doc:name="add-opportunity-to-processed" doc:id="c9c1ddbd-bafc-4ee3-a237-f1ffe10555ed">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="processed"><![CDATA[%dw 2.0
+output application/json
+---
+(vars.processed - "opportunity") ++ {opportunity: vars.processed.opportunity ++ vars.newPurchaseOppRes.items.id}]]></ee:set-variable>
+			<ee:set-variable variableName="processedPayload"><![CDATA[%dw 2.0
+output application/json
+---
+(vars.processedPayload - "opportunity") ++ {opportunity: vars.processedPayload.opportunity ++ vars.newPurchaseOpp}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+				<set-variable value="#[output application/json&#10;---&#10;vars.newPurchaseOppRes.items.id[0]]" doc:name="Set OpportunityId" doc:id="3e5b5d75-a140-4ded-812c-c83b05655f85" variableName="newOpportunityId" />
+				<remove-variable doc:name="Remove newPurchaseOppRes Variable" doc:id="149dfe57-b3db-4e51-a12e-f4cfedcddf34" variableName="newPurchaseOppRes" />
+			
+</when>
+			<otherwise >
+				<set-variable value="#[payload.processed.opportunity[0]]" doc:name="Set newOpportunityId" doc:id="7309872a-d1f4-43e0-8ee5-1765b389d848" variableName="newOpportunityId"/>
+				<logger level="INFO" doc:name="default-logger" doc:id="fd3de843-4ff6-499d-af1f-e5ff0f07ee0b" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "opportunity has already created as part of normal flow"&#10;}]'/>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="End Logger" doc:id="a11535c9-03ef-436f-ab5a-31b1c4e7d0c8" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "End of create-new-purchase-opportunity-flow"&#10;}]'/>
+	</sub-flow>
+	<sub-flow name="create-opportunity-contact-role-flow" doc:id="08a55b10-51f5-4985-bf29-74c9c931ba71" >
+		<logger level="INFO" doc:name="Start Logger" doc:id="4957244a-87ef-4ff7-8c78-759fff835082" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Start of create-opportunity-contact-role-flow"&#10;}]'/>
+		<ee:transform doc:name="create Opportunity Contact Role" doc:id="88f53dc1-8afe-4403-94cd-7a472b02f73d">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable resource="dwl/opportunity/paid/createOppContactRole.dwl" variableName="createOppContact" />
+			</ee:variables>
+		</ee:transform>
+		<choice doc:name="Check if contact role is already created" doc:id="e89217d5-4752-4aa4-a82b-bcb03bb146cb" >
+			<when expression="#[!isEmpty(vars.createOppContact)]">
+				<logger level="INFO" doc:name="Info Logger" doc:id="2155bcde-2a47-4dab-9084-712f0adffb0d" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "create Opportunity Contact Role in salesforce",&#10; "payload": vars.createOppContact&#10;}]'/>
+				<salesforce:create type="OpportunityContactRole" doc:name="Create-Opportunity Contact Role in SFDC" doc:id="a426f69c-4ba5-445a-be7f-cc7854e0d98c" config-ref="Salesforce_Config" target="oppContactRoleRes">
+			<salesforce:records><![CDATA[#[vars.createOppContact]]]></salesforce:records>
+		</salesforce:create>
+				<validation:is-true doc:name="Is true" doc:id="3d8ef057-8464-48b8-9689-ee1e127466f0" expression="#[vars.oppContactRoleRes.successful]" message='#["Transaction failed while creating the opportunity contact role in salesforce. The errors are :" ++ ((vars.oppContactRoleRes.items.exception.localizedMessage default []) joinBy "\n")]' />
+				<ee:transform doc:name="add-opportunityContactRole-to-processed" doc:id="64c37630-6893-40cd-ad4b-44e8ac0a30c8">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="processed"><![CDATA[%dw 2.0
+output application/json
+---
+(vars.processed - "contactRole") ++ {contactRole: vars.processed.contactRole ++ vars.oppContactRoleRes.items.id}]]></ee:set-variable>
+			<ee:set-variable variableName="processedPayload" ><![CDATA[%dw 2.0
+output application/json
+---
+(vars.processedPayload - "contactRole") ++ {contactRole: vars.processedPayload.contactRole ++ vars.createOppContact}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+				<remove-variable doc:name="Remove Variable-oppContactRoleRes" doc:id="159d19b1-173d-47c5-8c55-6cfea2b0296d" variableName="oppContactRoleRes" />
+			
+</when>
+			<otherwise >
+				<logger level="INFO" doc:name="default-logger" doc:id="435002a9-48ee-4e31-b409-840e62f0c1a9" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "opportunity contact role has already created as part of normal flow"&#10;}]'/>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="End Logger" doc:id="e9cc48f8-2edb-41f0-a5e7-ef7ca2462ffe" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "End of create-opportunity-contact-role-flow"&#10;}]'/>
+	</sub-flow>
+	<sub-flow name="create-opportunity-product-flow" doc:id="c1ec847c-0f33-4c93-8c13-208eea3c565a" >
+		<logger level="INFO" doc:name="Start Logger" doc:id="f31da696-6949-46e4-9810-b961b419d027" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Start of create-opportunity-product-flow"&#10;}]'/>
+		<ee:transform doc:name="create Opportunity Product" doc:id="0dce911f-cf60-4899-a4a3-630787c1c06c">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable resource="dwl/opportunity/paid/createOpportunityProduct.dwl" variableName="oppProPayload" />
+			</ee:variables>
+		</ee:transform>
+		<choice doc:name="Check if opportunity product is already created" doc:id="18b50625-7e0d-4182-a44a-27f8fe4d778e" >
+			<when expression="#[!isEmpty(vars.oppProPayload)]">
+				<logger level="INFO" doc:name="Info Logger" doc:id="9ea443d6-9cac-40ac-86fc-7e3961602b39" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "create Opportunity Product in salesforce",&#10; "payload": vars.oppProPayload&#10;}]'/>
+				<salesforce:create type="OpportunityLineItem" doc:name="Create-opportunity-product in SFDC" doc:id="b43817f3-3c62-4358-ba11-fa92758c5718" config-ref="Salesforce_Config" target="oppProRes">
+			<salesforce:records><![CDATA[#[vars.oppProPayload]]]></salesforce:records>
+		</salesforce:create>
+				<validation:is-true doc:name="Is true" doc:id="ae4f6e3c-860b-47fc-9cfe-84024c240f86" expression="#[vars.oppProRes.successful]" message='#["Transaction failed while creating the opportunity product in salesforce. The errors are :" ++ ((vars.oppProRes.items.exception.localizedMessage default []) joinBy "\n")]' />
+				<ee:transform doc:name="add-opportunityProduct-to-processed" doc:id="24233708-f752-45f3-8f0b-03c658bb0a06">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="processed"><![CDATA[%dw 2.0
+output application/json
+---
+(vars.processed - "opportunityProduct") ++ {opportunityProduct: vars.processed.opportunityProduct ++ vars.oppProRes.items.id}]]></ee:set-variable>
+			<ee:set-variable variableName="processedPayload" ><![CDATA[%dw 2.0
+output application/json
+---
+(vars.processedPayload - "opportunityProduct") ++ {opportunityProduct: vars.processedPayload.opportunityProduct ++ vars.oppProPayload }]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+				<remove-variable doc:name="Remove Variable-oppProRes" doc:id="b355b7c0-b6b7-433e-9d4e-294624e85d2e" variableName="oppProRes" />
+			
+</when>
+			<otherwise >
+				<logger level="INFO" doc:name="default-logger" doc:id="f3e7c110-bb53-4f07-b069-fd68cf24aa59" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "opportunity product has already created as part of normal flow"&#10;}]'/>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="End Logger" doc:id="ce089f8f-ec28-4d3a-940e-2f6aa290de28" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "End of create-opportunity-product-flow"&#10;}]'/>
+	</sub-flow>
+	
+	<sub-flow name="search-pricebook-entry" doc:id="3b334c2e-be56-4914-ba3e-29e63fdd5de3" >
+		<ee:transform doc:name="Set search query" doc:id="8754a58b-00de-4dee-8c29-40ae2ee36b12" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="dwl/opportunity/paid/priceBookSOQL.dwl" variableName="query" />
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Info Logger" doc:id="e417e05f-d2f8-40f5-bff7-0603cc9e5933" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "search for Price Book Entries",&#10; "query": vars.query&#10;}]' />
+		<salesforce:query doc:name="Query in Price Book Entry" doc:id="e5608069-0f54-4a6f-b8e0-12f367425a85" config-ref="Salesforce_Config" target="priceBookEntryId">
+			<salesforce:salesforce-query ><![CDATA[#[vars.query]]]></salesforce:salesforce-query>
+		</salesforce:query>
+	</sub-flow>
+	<sub-flow name="create-opportunity-refund-flow" doc:id="8ea4dff6-2ce3-4d78-9330-705f4ada98ad" >
+		<logger level="INFO" doc:name="Start Logger" doc:id="43e65c42-9ce0-4a41-a5e4-a2888e61af99" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Start of create-opportunity-refund-flow"&#10;}]'/>
+		<flow-ref doc:name="Flow Reference-currency-code-flow" doc:id="1e020e02-86fc-42c0-b183-9e3335852486" name="currency-code-flow"/>
+		<flow-ref doc:name="Flow Reference-get-account-details-subflow" doc:id="3ac2421a-aa8d-41d1-ab1a-2ec266a78c10" name="get-account-details-subflow"/>
+		<ee:transform doc:name="refund-opportunity-payload" doc:id="5db9af18-3e1a-4435-9d7a-cf08fcd1e5fb" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="dwl/opportunity/refund/refund-payload.dwl" variableName="newPurchaseOpp" />
+			</ee:variables>
+		
+</ee:transform>
+		<salesforce:query doc:name="Query-opportunity" doc:id="0cbebac2-bd8c-4d4a-a51c-be6bd3f2e347" config-ref="Salesforce_Config" target="refundOppquery">
+			<salesforce:salesforce-query ><![CDATA[#["select id from opportunity where Cleverbridge_Reimbursement_ID__c='$(payload.reimbursementId)'"]]]></salesforce:salesforce-query>
+		</salesforce:query>
+		<choice doc:name="Check if opportunity is present " doc:id="ad8050aa-ef2b-4afb-ba02-20bf302dcaec" >
+			<when expression="#[isEmpty(vars.refundOppquery) or vars.reprocessing]">
+				<flow-ref doc:name="Flow Reference create-refund-opportunities-flow" doc:id="f624a89c-5481-4bc4-a5f9-252f505d0dd5" name="create-refund-opportunities-flow"/>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="396221c7-b42f-4c99-829e-95a3dc78b4d2" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Start of create-opportunity-refund-flow"&#10;}]'/>
+			</otherwise>
+		</choice>
+		</sub-flow>
+		<sub-flow name="create-refund-opportunities-flow" doc:id="e3b3fbe9-3e21-4c61-8725-9e0268aeab0b" >
+		<flow-ref doc:name="Flow Reference-create-new-purchase-opportunity-flow" doc:id="f47dd7fc-dc5e-4117-a16c-544ad9dd5459" name="create-new-purchase-opportunity-flow"/>
+		<flow-ref doc:name="Flow Reference-create-opportunity-contact-role-flow" doc:id="2b4be372-8a9e-47e1-a22b-b241fa8d4444" name="create-opportunity-contact-role-flow"/>
+		<foreach doc:name="For Each" doc:id="b6f4acb7-9550-44e3-a0a8-6b3ad54cb17a" collection="#[payload.items]">
+					<set-variable value="#[output application/json&#10;---&#10;p('productId.$(payload.productId)')]" doc:name="lookup productId" doc:id="5a6ac53c-30f0-4155-9343-14e1d68adc36" variableName="lookupProductId"/>
+			<logger level="INFO" doc:name="Info Logger" doc:id="1f0999d4-37ff-4d2a-9808-6796871ce639" message='#[output application/json&#10;---&#10;{&#10;    "purchaseId": vars.realPayload.purchaseId,&#10;    "correlationId": correlationId,&#10;    "applicationName": app.name,&#10;    "environment": Mule::p("mule.env"),&#10; 	"timestamp": now()&gt;&gt;"EST",&#10;    "logLevel": "Info",&#10;    "message": "get product details from salesforce"&#10;}]'/>
+			<salesforce:query doc:name="get product details " doc:id="21589770-04a5-4e13-beb2-722f16bdca86" config-ref="Salesforce_Config" target="productRes">
+						<salesforce:salesforce-query ><![CDATA[#["Select Id,Name from Product2 where Id = '" ++ vars.lookupProductId ++ "'"]]]></salesforce:salesforce-query>
+					</salesforce:query>
+					<flow-ref doc:name="Flow Reference-search-pricebook-entry" doc:id="182bee66-8b84-4f04-8411-b53f29ae4f96" name="search-pricebook-entry"/>
+			<flow-ref doc:name="Flow Reference-create-opportunity-product-flow" doc:id="157a9ff8-667e-4f01-ac4d-b160d656972c" name="create-opportunity-product-flow"/>
+			<ee:transform doc:name="query-serial-soql" doc:id="6e775eb0-9a2e-4149-87fe-15665a70aa3c">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable resource="dwl/opportunity/refund/querySerial.dwl" variableName="querySerial" />
+			</ee:variables>
+		</ee:transform>
+			<flow-ref doc:name="Flow Reference-search-serial-subflow" doc:id="0f584145-319e-4fa6-af2d-1e191eff86a5" name="search-serial-subflow" />
+			<validation:is-not-empty-collection doc:name="check-serial" doc:id="c1ac132c-4757-428e-940f-894bde8f66a1" message='#["There is no Serial exist in salesforce for the given transaction(refund path)"]' values="#[vars.querySerial]"/>
+			<flow-ref doc:name="Flow Reference-update-serial-flow" doc:id="9e40adc1-d67a-4b1e-b086-ffb653ecef1c" name="update-serial-flow" />
+			<ee:transform doc:name="create-assetOpportunity-payload" doc:id="6f0ed33d-503b-4e06-9584-9fec0da185d3" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="dwl/opportunity/refund/assetOpportunity.dwl" variableName="assetOpportunity" />
+			</ee:variables>
+		</ee:transform>
+			<flow-ref doc:name="Flow Reference-create-asset-opportunity-flow" doc:id="67bfd4eb-57d4-4bd9-8783-33591c15ad3e" name="create-asset-opportunity-flow" />
+				
+</foreach>
+		<flow-ref doc:name="Flow Reference-update-opportunity" doc:id="a08f8230-41c8-4606-8f8f-517e3c4e1f98" name="update-opportunity" />
+		
+		<logger level="INFO" doc:name="End Logger" doc:id="cf7aa854-e86c-498b-a458-61ae3bcdf7b8" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "End of create-opportunity-refund-flow"&#10;}]'/>
+	
+</sub-flow>
+	<sub-flow name="search-serial-subflow" doc:id="23ff8220-251d-432c-bc64-67ac526ed5d1" >
+		<logger level="INFO" doc:name="Info Logger" doc:id="05e40caf-afc3-4aac-a008-265ff9372f5f" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "search for serial in salesforce",&#10; "query": vars.querySerial&#10;}]'/>
+		<salesforce:query doc:name="query-serial" doc:id="ce30ccd4-d289-492d-bc6c-0807b6ef468e" config-ref="Salesforce_Config" target="querySerial">
+			<salesforce:salesforce-query><![CDATA[#[vars.querySerial]]]></salesforce:salesforce-query>
+		</salesforce:query>
+	
+	</sub-flow>
+	<sub-flow name="update-serial-flow" doc:id="0d17fa80-84f6-4cb6-a10f-c609104e10ad" >
+		<ee:transform doc:name="update-serial" doc:id="93355cf5-325b-4153-8c8e-590412d04dad" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="dwl/opportunity/refund/updateSerial.dwl" variableName="updateSerial" />
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Info Logger" doc:id="0ad76601-f85e-406f-9b56-e39718389c7b" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "update serial in salesforce",&#10; "payload": vars.updateSerial&#10;}]'/>
+		<salesforce:update doc:name="update-serial" doc:id="4fb87070-bd93-4c66-af64-b5c1f5326d0c" config-ref="Salesforce_Config" type="Serial__c" target="updateSerialRes">
+			<salesforce:records ><![CDATA[#[vars.updateSerial]]]></salesforce:records>
+		</salesforce:update>
+		<ee:transform doc:name="add-serial-to-processed" doc:id="7614beae-4e6e-48a3-9f81-1ebc767bac32" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="processed" ><![CDATA[%dw 2.0
+output application/json
+---
+(vars.processed - "serial") ++ {serial: (flatten(vars.processed.serial + vars.updateSerialRes.items.id)) distinctBy ($)}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<validation:is-true doc:name="Is true" doc:id="2c41eeb9-4091-416b-a217-813f9244f2e1" expression="#[vars.updateSerialRes.successful]" message='#["Transaction failed while updating serial in salesforce. The errors are :" ++ ((vars.updateSerialRes.items.exception.localizedMessage default []) joinBy "\n")]'/>
+	</sub-flow>
+		<sub-flow name="create-asset-opportunity-flow" doc:id="16abbb88-d480-4ff5-85f5-bde1f4f91fff" >
+		<choice doc:name="Check if asset opportunity is already created" doc:id="87f5e773-e713-4c8e-8b15-a07865e59e62" >
+			<when expression="#[!isEmpty(vars.assetOpportunity)]">
+				<logger level="INFO" doc:name="Logger" doc:id="83c08be8-ccbb-48aa-b082-0d7c1bf8f8c4" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "create Asset opportunity in salesforce",&#10; "payload": vars.assetOpportunity&#10;}]'/>
+				<salesforce:create type="AssetOpportunity__c" doc:name="create-assetOpportunity" doc:id="61187c78-6623-4fc8-8bd5-8defc750cef5" config-ref="Salesforce_Config" target="assetOpportunityRes">
+			<salesforce:records><![CDATA[#[vars.assetOpportunity]]]></salesforce:records>
+		</salesforce:create>
+				<ee:transform doc:name="add-assetOpportunity-to-processed" doc:id="da843be6-a17d-4d75-900c-aa3291c2ecbb">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="processed"><![CDATA[%dw 2.0
+output application/json
+---
+(vars.processed - "assetOpportunity") ++ {assetOpportunity: (flatten(vars.processed.assetOpportunity + vars.assetOpportunityRes.items.id)) distinctBy ($)}]]></ee:set-variable>
+				<ee:set-variable variableName="processedPayload"><![CDATA[%dw 2.0
+output application/json
+---
+(vars.processedPayload - "assetOpportunity") ++ {assetOpportunity: (flatten(vars.processedPayload.assetOpportunity ++ (vars.assetOpportunity filter(vars.assetOpportunityRes.items.successful[$$])))) distinctBy ($)}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+				<validation:is-true doc:name="Is true" doc:id="0ca1d925-763b-49e2-8c3a-e5373df34469" expression="#[vars.assetOpportunityRes.successful]" message='#["Transaction failed while creating the asset opportunity in salesforce. The errors are :" ++ ((vars.assetOpportunityRes.items.exception.localizedMessage default []) joinBy "\n")]' />
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Info Logger" doc:id="76e3fdff-1d0d-44fb-a084-3fa27f414065" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "asset opportunity has already created as part of normal flow"&#10;}]'/>
+			</otherwise>
+		</choice>
+	</sub-flow>
+	<sub-flow name="create-new-serial-subflow" doc:id="95854105-9e21-4b2c-a4fc-9cbd31bb62d2" >
+		<choice doc:name="Check if serial is already created" doc:id="b505b866-a2d0-4b94-87e6-fd1c26021e53" >
+			<when expression="#[!isEmpty(vars.createNewSerialPayload)]">
+				<logger level="INFO" doc:name="Info Logger" doc:id="952db584-34cb-4794-a591-74f5f8384711" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "create Serial in salesforce",&#10; "payload": vars.createNewSerialPayload&#10;}]'/>
+				<salesforce:create doc:name="Create-Serial" doc:id="da6cff6c-7c5a-426e-9482-1b554d49d538" config-ref="Salesforce_Config" type="Serial__c" target="createNewSerialPayloadRes">
+						<salesforce:records><![CDATA[#[vars.createNewSerialPayload]]]></salesforce:records>
+					</salesforce:create>
+				<ee:transform doc:name="add-createSerial-to-processed" doc:id="a62980ac-0934-4e31-bcfc-f76c19016af3">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="processed"><![CDATA[%dw 2.0
+output application/json
+---
+(vars.processed - "createSerial") ++ {createSerial: (flatten(vars.processed.createSerial + vars.createNewSerialPayloadRes.items.id)) distinctBy ($)}]]></ee:set-variable>
+				<ee:set-variable variableName="processedPayload"><![CDATA[%dw 2.0
+output application/json
+---
+(vars.processedPayload - "createSerial") ++ {createSerial: (flatten(vars.processedPayload.createSerial ++ (vars.createNewSerialPayload filter(vars.createNewSerialPayloadRes.items.successful[$$])))) distinctBy ($)}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+				<validation:is-true doc:name="Is true" doc:id="953dfa41-b890-4245-9677-d705f577bccf" expression="#[vars.createNewSerialPayloadRes.successful]" message='#["Transaction failed while creating the Serial in salesforce. The errors are :" ++ ((vars.createNewSerialPayloadRes.items.exception.localizedMessage default []) joinBy "\n")]' />
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Info Logger" doc:id="2568b7e0-51c0-4c98-96c8-207fb86fb903" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "serial has already created as part of normal flow"&#10;}]'/>
+			</otherwise>
+		</choice>
+		
+	</sub-flow>
+	<sub-flow name="upgrade-purchase-path-subflow" doc:id="985baeca-f747-420a-9f38-02030eb33180" >
+		<logger level="INFO" doc:name="Start Logger" doc:id="e6a55479-73a6-4d65-90fc-7a2954a523e7" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Start of upgrade-path-subflow"&#10;}]'/>
+		<ee:transform doc:name="keys of payload" doc:id="ea6d9523-34af-4436-8d50-d7bf838c275f">
+				<ee:message>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="keysOfPayload"><![CDATA[%dw 2.0
+output application/json
+---
+keysOf(vars.realPayload.extraParameters)]]></ee:set-variable>
+				<ee:set-variable variableName="isUpgrade" ><![CDATA[%dw 2.0
+output application/java
+---
+true]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		<choice doc:name="Check x-serial" doc:id="7636d760-82c6-4c55-a593-ba0731cf18e9">
+				<when expression='#[vars.keysOfPayload contains ("x-serial")]'>
+					<ee:transform doc:name="query-serial-soql" doc:id="ae702d8b-8d3e-4dac-9d45-7383df7edf56">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+						<ee:set-variable resource="dwl/opportunity/paid/querySerialUpgrade.dwl" variableName="querySerial" />
+			</ee:variables>
+		</ee:transform>
+					<flow-ref doc:name="Flow Reference-search-serial-subflow" doc:id="cc461911-62b5-49a0-92cd-0bf244398aba" name="search-serial-subflow" />
+					<validation:is-not-empty-collection doc:name="check-serial" doc:id="070ecfcb-4cb9-4a6f-a3b2-672061aa8d9a" values="#[vars.querySerial]" message='#["There is no Serial exist in salesforce for the given transaction(upgrade path)"]' />
+				<flow-ref doc:name="Flow Reference-update-serial-flow" doc:id="f9fa0a80-26de-41a1-88fc-a64e965632f8" name="update-serial-flow" />
+					<ee:transform doc:name="update Asset Payload" doc:id="13712eda-91d4-4e26-bae5-cc0d82525361">
+						<ee:message>
+						</ee:message>
+						<ee:variables>
+						<ee:set-variable resource="dwl/opportunity/paid/updateAsset.dwl" variableName="updateAssetPayload" />
+						</ee:variables>
+					</ee:transform>
+					<flow-ref doc:name="Flow Reference-update-asset-subflow" doc:id="34f97259-335e-4476-be2d-a63f186ad897" name="update-asset-subflow" />
+				<ee:transform doc:name="create-assetOpportunity-payload" doc:id="418d9e3e-c5ef-476e-b0c1-ef8d1b07d95c" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="dwl/opportunity/refund/assetOpportunity.dwl" variableName="assetOpportunity" />
+			</ee:variables>
+		</ee:transform>
+					<flow-ref doc:name="Flow Reference-create-asset-opportunity-flow" doc:id="f09159e1-2555-4f04-ae47-f5865b2bcbea" name="create-asset-opportunity-flow" />
+					<ee:transform doc:name="create new serial payload" doc:id="1c397cca-6a23-47aa-babf-aee602e127a9">
+						<ee:message>
+						</ee:message>
+						<ee:variables>
+						<ee:set-variable resource="dwl/opportunity/paid/createNewSerial.dwl" variableName="createNewSerialPayload" />
+						</ee:variables>
+					</ee:transform>
+					<flow-ref doc:name="Flow Reference-create-new-serial-subflow" doc:id="4b0bed1b-3e38-4880-8666-642a2f1626df" name="create-new-serial-subflow" />
+				</when>
+				<otherwise>
+					<logger level="INFO" doc:name="Info Logger" doc:id="dcc25653-ef68-4d3d-8190-fb01fe29fd65" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "x-serial is not present"&#10;}]' />
+				</otherwise>
+			</choice>
+	</sub-flow>
+</mule>

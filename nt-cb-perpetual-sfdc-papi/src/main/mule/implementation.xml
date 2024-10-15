@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	
+	<sub-flow name="cb-to-sf-main-flow" doc:id="ef09977b-c73e-4d40-a958-b827857ccc48" >
+		<logger level="INFO" doc:name="Start Logger" doc:id="bfe933a6-6426-4d50-bc03-03f67628886c" message='#[output application/json&#10;---&#10;{&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Start of cb-to-sf-main-flow",&#10; "payload" : payload&#10;}]'/>
+		<ee:transform doc:name="Check Notification Status and sub revenue catagory" doc:id="580b4ae0-5264-41b0-90b9-dfb2cb6625b8" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="opportunityFlag" ><![CDATA[%dw 2.0
+output application/json
+var status=["Refunded", "Paid"]
+---
+if(((status contains payload.purchase.status) or (status contains payload.status)) and ((isEmpty(payload.purchase.subscriptionRevenueCategoryId)) and (isEmpty(payload.subscriptionRevenueCategoryId)))) true else false]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<choice doc:name="Check notification status" doc:id="dc8ee3c4-6b42-4554-81c3-afc07a2235c2" >
+			<when expression='#[vars.opportunityFlag]'>
+				<ee:transform doc:name="set payload structure" doc:id="94c1bf17-461b-4b6e-88f2-43ca9d7b7ab6">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+if (payload.purchase.status ~="Refunded") ("meta": payload.meta) ++ payload.purchase  else payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<flow-ref doc:name="Flow Reference-check-lead-contact-flow" doc:id="0b40f60e-6422-4bbb-8ee5-6f2645a14738" name="check-lead-contact-flow" />
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Info Logger" doc:id="14508ff4-7c74-4d6d-9319-fdea14161e4c" message='#[output application/json&#10;---&#10;{&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "condition did not match for notification status and subscriptionRevenueCategoryId. Flow has been stopped"&#10;}]'/>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="End Logger" doc:id="ae821d36-9f92-4616-a50e-794bd32da3b3" message='#[output application/json&#10;---&#10;{&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "End of cb-to-sf-main-flow"&#10;}]'/>
+	</sub-flow>
+	<sub-flow name="check-lead-contact-flow" doc:id="e1aa8810-cc77-4d3d-be2b-8f913da06443" >
+		<logger level="INFO" doc:name="Start Logger" doc:id="1143b327-16bf-48ea-88e8-6f8074efd6a2" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": payload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "Start of check-lead-contact-flow"&#10;}]'/>
+		<ee:transform doc:name="real-payload" doc:id="73e948ed-d458-4cf1-8b7b-e0a4f5a5ddd8">
+					<ee:message>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="realPayload"><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+				<ee:set-variable variableName="processed" ><![CDATA[%dw 2.0
+output application/json
+---
+if(vars.reprocessing)
+payload.processed
+else
+{
+    "opportunity":[],
+    "contactRole":[],
+    "opportunityProduct":[],
+    "asset":[],
+    "serial":[],
+    "assetOpportunity":[],
+    "createSerial" : [],
+    "account":[],
+    "contact":[]
+}]]></ee:set-variable>
+				<ee:set-variable variableName="processedPayload" ><![CDATA[%dw 2.0
+output application/json
+---
+if(vars.reprocessing)
+payload.processedPayload
+else
+{
+    "opportunity":[],
+    "contactRole":[],
+    "opportunityProduct":[],
+    "asset":[],
+    "serial":[],
+    "assetOpportunity":[],
+    "createSerial" : [],
+    "account":[],
+    "contact":[]
+}]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+		<flow-ref doc:name="Flow Reference-cb-lead-contact-check-and-conversion-main-flow" doc:id="a1e7c924-ae39-42e3-848e-1d30f4e8544e" name="cb-lead-contact-check-and-conversion-main-flow"/>
+		<ee:transform doc:name="Set Variable" doc:id="0b977393-cfca-41ff-b3dc-f118daa209e1">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="accountId"><![CDATA[%dw 2.0
+output application/json
+---
+vars.purchaseDetails.accountId]]></ee:set-variable>
+				<ee:set-variable variableName="accountName"><![CDATA[%dw 2.0
+output application/json
+---
+vars.purchaseDetails.accountName]]></ee:set-variable>
+				<ee:set-variable variableName="contactId"><![CDATA[%dw 2.0
+output application/java
+---
+vars.purchaseDetails.contactId]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<choice doc:name="Check for paid or refund" doc:id="9d2eda27-59ef-429d-b97a-e90347dc5b5a" >
+			<when expression='#[payload.status ~= "Paid"]'>
+				<flow-ref doc:name="Flow Reference-call-oppurtunity-paid-flow" doc:id="af23fb83-da6d-4c9d-8e23-48bb2eb0fb6f" name="call-oppurtunity-paid-flow" />
+			</when>
+			<otherwise >
+				<flow-ref doc:name="Flow Reference-create-opportunity-refund-flow" doc:id="826f150c-f9b7-4fa9-b986-2acfcd9662df" name="create-opportunity-refund-flow" />
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="End Logger" doc:id="4b38ac8e-411b-4457-a867-9a759ac8078d" message='#[output application/json&#10;---&#10;{&#10; "purchaseId": vars.realPayload.purchaseId,&#10; "correlationId": correlationId,&#10; "applicationName": app.name,&#10; "environment": Mule::p("mule.env"),&#10; "timestamp": now()&gt;&gt;"EST",&#10; "logLevel": "Info",&#10; "message": "End of check-lead-contact-flow"&#10;}]'/>
+	</sub-flow>
+	
+</mule>

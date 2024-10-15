@@ -1,0 +1,437 @@
+[
+  {
+    "country": "Australia",
+    "State": "Australian Capital Territory",
+    "Abbrev": "ACT"
+  },
+  {
+    "country": "Australia",
+    "State": "New South Wales",
+    "Abbrev": "NSW"
+  },
+  {
+    "country": "Australia",
+    "State": "Northern Territory",
+    "Abbrev": "NT"
+  },
+  {
+    "country": "Australia",
+    "State": "Queensland",
+    "Abbrev": "QLD"
+  },
+  {
+    "country": "Australia",
+    "State": "South Australia",
+    "Abbrev": "SA"
+  },
+  {
+    "country": "Australia",
+    "State": "Tasmania",
+    "Abbrev": "TAS"
+  },
+  {
+    "country": "Australia",
+    "State": "Victoria",
+    "Abbrev": "VIC"
+  },
+  {
+    "country": "Australia",
+    "State": "Western Australia",
+    "Abbrev": "WA"
+  },
+  {
+    "country": "Canada",
+    "State": "Does not apply.",
+    "Abbrev": "Not Provided"
+  },
+  {
+    "country": "Canada",
+    "State": "Alberta",
+    "Abbrev": "AB"
+  },
+  {
+    "country": "Canada",
+    "State": "British Columbia",
+    "Abbrev": "BC"
+  },
+  {
+    "country": "Canada",
+    "State": "Manitoba",
+    "Abbrev": "MB"
+  },
+  {
+    "country": "Canada",
+    "State": "New Brunswick",
+    "Abbrev": "NB"
+  },
+  {
+    "country": "Canada",
+    "State": "Newfoundland and Labrador",
+    "Abbrev": "NL"
+  },
+  {
+    "country": "Canada",
+    "State": "Northwest Territories",
+    "Abbrev": "NT"
+  },
+  {
+    "country": "Canada",
+    "State": "Nova Scotia",
+    "Abbrev": "NS"
+  },
+  {
+    "country": "Canada",
+    "State": "Nunavut",
+    "Abbrev": "NU"
+  },
+  {
+    "country": "Canada",
+    "State": "Ontario",
+    "Abbrev": "ON"
+  },
+  {
+    "country": "Canada",
+    "State": "Prince Edward Isl.",
+    "Abbrev": "PE"
+  },
+  {
+    "country": "Canada",
+    "State": "Quebec",
+    "Abbrev": "QC"
+  },
+  {
+    "country": "Canada",
+    "State": "Saskatchewan",
+    "Abbrev": "SK"
+  },
+  {
+    "country": "Canada",
+    "State": "Yukon Territory",
+    "Abbrev": "YT"
+  },
+  {
+    "country": "United States",
+    "State": "Does not apply.",
+    "Abbrev": "Not Provided"
+  },
+  {
+    "country": "United States",
+    "State": "Alabama",
+    "Abbrev": "AL"
+  },
+  {
+    "country": "United States",
+    "State": "Alaska",
+    "Abbrev": "AK"
+  },
+  {
+    "country": "United States",
+    "State": "Arizona",
+    "Abbrev": "AZ"
+  },
+  {
+    "country": "United States",
+    "State": "Arkansas",
+    "Abbrev": "AR"
+  },
+  {
+    "country": "United States",
+    "State": "Armed Forces Americas",
+    "Abbrev": "AA"
+  },
+  {
+    "country": "United States",
+    "State": "Armed Forces EU, ME, Afr, CDN",
+    "Abbrev": "AE"
+  },
+  {
+    "country": "United States",
+    "State": "Armed Forces Pacific",
+    "Abbrev": "AP"
+  },
+  {
+    "country": "United States",
+    "State": "California",
+    "Abbrev": "CA"
+  },
+  {
+    "country": "United States",
+    "State": "Colorado",
+    "Abbrev": "CO"
+  },
+  {
+    "country": "United States",
+    "State": "Connecticut",
+    "Abbrev": "CT"
+  },
+  {
+    "country": "United States",
+    "State": "D.C.",
+    "Abbrev": "DC"
+  },
+  {
+    "country": "United States",
+    "State": "Delaware",
+    "Abbrev": "DE"
+  },
+  {
+    "country": "United States",
+    "State": "Florida",
+    "Abbrev": "FL"
+  },
+  {
+    "country": "United States",
+    "State": "Georgia",
+    "Abbrev": "GA"
+  },
+  {
+    "country": "United States",
+    "State": "Hawaii",
+    "Abbrev": "HI"
+  },
+  {
+    "country": "United States",
+    "State": "Idaho",
+    "Abbrev": "ID"
+  },
+  {
+    "country": "United States",
+    "State": "Illinois",
+    "Abbrev": "IL"
+  },
+  {
+    "country": "United States",
+    "State": "Indiana",
+    "Abbrev": "IN"
+  },
+  {
+    "country": "United States",
+    "State": "Iowa",
+    "Abbrev": "IA"
+  },
+  {
+    "country": "United States",
+    "State": "Kansas",
+    "Abbrev": "KS"
+  },
+  {
+    "country": "United States",
+    "State": "Kentucky",
+    "Abbrev": "KY"
+  },
+  {
+    "country": "United States",
+    "State": "Louisiana",
+    "Abbrev": "LA"
+  },
+  {
+    "country": "United States",
+    "State": "Maine",
+    "Abbrev": "ME"
+  },
+  {
+    "country": "United States",
+    "State": "Maryland",
+    "Abbrev": "MD"
+  },
+  {
+    "country": "United States",
+    "State": "Massachusetts",
+    "Abbrev": "MA"
+  },
+  {
+    "country": "United States",
+    "State": "Michigan",
+    "Abbrev": "MI"
+  },
+  {
+    "country": "United States",
+    "State": "Minnesota",
+    "Abbrev": "MN"
+  },
+  {
+    "country": "United States",
+    "State": "Mississippi",
+    "Abbrev": "MS"
+  },
+  {
+    "country": "United States",
+    "State": "Missouri",
+    "Abbrev": "MO"
+  },
+  {
+    "country": "United States",
+    "State": "Montana",
+    "Abbrev": "MT"
+  },
+  {
+    "country": "United States",
+    "State": "Nebraska",
+    "Abbrev": "NE"
+  },
+  {
+    "country": "United States",
+    "State": "Nevada",
+    "Abbrev": "NV"
+  },
+  {
+    "country": "United States",
+    "State": "New Hampshire",
+    "Abbrev": "NH"
+  },
+  {
+    "country": "United States",
+    "State": "New Jersey",
+    "Abbrev": "NJ"
+  },
+  {
+    "country": "United States",
+    "State": "New Mexico",
+    "Abbrev": "NM"
+  },
+  {
+    "country": "United States",
+    "State": "New York",
+    "Abbrev": "NY"
+  },
+  {
+    "country": "United States",
+    "State": "North Carolina",
+    "Abbrev": "NC"
+  },
+  {
+    "country": "United States",
+    "State": "North Dakota",
+    "Abbrev": "ND"
+  },
+  {
+    "country": "United States",
+    "State": "Ohio",
+    "Abbrev": "OH"
+  },
+  {
+    "country": "United States",
+    "State": "Oklahoma",
+    "Abbrev": "OK"
+  },
+  {
+    "country": "United States",
+    "State": "Oregon",
+    "Abbrev": "OR"
+  },
+  {
+    "country": "United States",
+    "State": "Pennsylvania",
+    "Abbrev": "PA"
+  },
+  {
+    "country": "United States",
+    "State": "Rhode Island",
+    "Abbrev": "RI"
+  },
+  {
+    "country": "United States",
+    "State": "South Carolina",
+    "Abbrev": "SC"
+  },
+  {
+    "country": "United States",
+    "State": "South Dakota",
+    "Abbrev": "SD"
+  },
+  {
+    "country": "United States",
+    "State": "Tennessee",
+    "Abbrev": "TN"
+  },
+  {
+    "country": "United States",
+    "State": "Texas",
+    "Abbrev": "TX"
+  },
+  {
+    "country": "United States",
+    "State": "Utah",
+    "Abbrev": "UT"
+  },
+  {
+    "country": "United States",
+    "State": "Vermont",
+    "Abbrev": "VT"
+  },
+  {
+    "country": "United States",
+    "State": "Virginia",
+    "Abbrev": "VA"
+  },
+  {
+    "country": "United States",
+    "State": "Washington",
+    "Abbrev": "WA"
+  },
+  {
+    "country": "United States",
+    "State": "West Virginia",
+    "Abbrev": "WV"
+  },
+  {
+    "country": "United States",
+    "State": "Wisconsin",
+    "Abbrev": "WI"
+  },
+  {
+    "country": "United States",
+    "State": "Wyoming",
+    "Abbrev": "WY"
+  },
+  {
+    "country": "United States",
+    "State": "American Samoa",
+    "Abbrev": "AS"
+  },
+  {
+    "country": "United States",
+    "State": "Guam",
+    "Abbrev": "GU"
+  },
+  {
+    "country": "United States",
+    "State": "Marshall Islands",
+    "Abbrev": "MH"
+  },
+  {
+    "country": "United States",
+    "State": "Micronesia, Federated States of",
+    "Abbrev": "FM"
+  },
+  {
+    "country": "United States",
+    "State": "Northern Mariana Islands",
+    "Abbrev": "MP"
+  },
+  {
+    "country": "United States",
+    "State": "Palau",
+    "Abbrev": "PW"
+  },
+  {
+    "country": "United States",
+    "State": "Puerto Rico",
+    "Abbrev": "PR"
+  },
+  {
+    "country": "United States",
+    "State": "U. S. Minor Outlying Islands",
+    "Abbrev": "UM"
+  },
+  {
+    "country": "United States",
+    "State": "District of Columbia",
+    "Abbrev": "DC"
+  },
+  {
+    "country": "United States",
+    "State": "District Of Columbia",
+    "Abbrev": "DC"
+  }
+]
